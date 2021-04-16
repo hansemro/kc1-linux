@@ -60,10 +60,10 @@ if [ "$1" == "help" ]; then
                                             "with fastboot"
 elif [ "$1" == "just_boot" ]; then
     echo "Booting prev-boot.img with fastboot"
-    fastboot boot $BUILD_TIME-boot.img
+    fastboot boot prev-boot.img
 elif [ "$1" == "just_flash" ]; then
     echo "Flashing prev-boot.img with fastboot"
-    fastboot flash boot $BUILD_TIME-boot.img
+    fastboot flash boot prev-boot.img
 else
     if ! [ -f ../arch/arm/boot/zImage ]; then
         echo "Error: missing zImage" >&2
