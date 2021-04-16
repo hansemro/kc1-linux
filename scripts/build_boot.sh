@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Maintained by Hansem Ro (hansemro@outlook.com)
+
 # Build Android boot image (boot.img)
 #
 # Setup:
