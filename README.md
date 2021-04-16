@@ -170,9 +170,49 @@ Proceed to the following steps if you have access to built u-boot and kernel ima
 
 Skip steps 1 and 3 if you already have TWRP with working adb installed.
 
-### 1. Rooting the Kindle Fire
+### 1. (Rooting the Kindle Fire) and setting the device to fastboot mode
 
-TODO: Finish step
+"Rooting" is only required if the Kindle Fire is on newer stock firmware (FireOS > 6.3.0) and the device cannot get access to fastboot mode by another method.
+
+```
+## Get saferoot.zip
+## Relevant xda post:
+## https://forum.xda-developers.com/t/root-saferoot-root-for-vruemj7-mk2-and-android-4-3.2565758/#post-48392009
+##
+##  1) Enable USB Debugging
+##  2) Enable USB ADB access
+##  3) Root with saferoot.zip
+$ wget https://forum.xda-developers.com/attachments/saferoot-zip.2760984/ -O saferoot.zip
+$ mkdir saferoot
+$ cd saferoot
+$ unzip ../saferoot.zip
+$ ./install.sh
+```
+
+To check if you have root, run the following:
+
+```
+## from a computer
+$ adb shell
+(adb)$ su
+## If you see the prompt change to `#`, then the device was successfully rooted!
+```
+
+With root, we can use a utility called fbmode to set the Kindle Fire to fastboot mode.
+
+```
+## Get fbmode.zip
+## Relevant xda post:
+## https://forum.xda-developers.com/t/fastboot-stock-6-2-1-fastboot-mode-without-rooting-or-cables.1414832/
+$ wget https://forum.xda-developers.com/attachments/fbmode-zip.833582/ -O fbmode.zip
+$ unzip fbmode.zip
+$ adb push fbmode /data/local/tmp
+$ adb shell chmod 755 /data/local/tmp/fbmode
+$ adb shell /data/local/tmp/fbmode
+$ adb reboot
+```
+
+The Kindle should now be in fastboot mode. Check `fastboot devices` to see if the Kindle is properly identified and accessible.
 
 ### 2. Installing U-Boot
 
