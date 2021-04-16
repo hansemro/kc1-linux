@@ -46,16 +46,16 @@ build_boot_img() {
 }
 
 if [ "$1" == "help" ]; then
-    echo "./build_boot.sh               : build boot image with date and link" \
+    echo "./build_boot.sh            : build boot image with date and link" \
                                             "as prev-boot.img"
-    echo "./build_boot.sh help          : print this help message and exit"
-    echo "./build_boot.sh boot          : build boot image and boot with" \
+    echo "./build_boot.sh help       : print this help message and exit"
+    echo "./build_boot.sh boot       : build boot image and boot with" \
                                             "fastboot"
-    echo "./build_boot.sh just_boot     : just boot previously built image" \
+    echo "./build_boot.sh just_boot  : just boot previously built image" \
                                             "with fastboot"
-    echo "./build_boot.sh flash         : build boot image and flash boot" \
+    echo "./build_boot.sh flash      : build boot image and flash boot" \
                                             "partition with fastboot"
-    echo "./build_boot.sh just_flash    : just flash previously built image" \
+    echo "./build_boot.sh just_flash : just flash previously built image" \
                                             "with fastboot"
 elif [ "$1" == "just_boot" ]; then
     echo "Booting prev-boot.img with fastboot"
