@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+# Maintained by Hansem Ro (hansemro@outlook.com)
 
 # Usage:
 #   ./make-linux.sh         : build kernel + modules
