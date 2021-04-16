@@ -104,7 +104,7 @@ $ git clone https://github.com/crosstool-ng/crosstool-ng
 $ cd crosstool-ng
 $ ./bootstrap
 $ ./configure --prefix=${crosstool-ng-install-location}
-$ echo export PATH=\$PATH:${crosstool-ng-install-location/bin} > ~/.bashrc
+$ echo export PATH=\$PATH:${crosstool-ng-install-location/bin} >> ~/.bashrc
 $ source ~/.bashrc
 $ ct-ng list-samples
 $ ct-ng show-arm-cortexa9_neon-linux-gnueabihf
@@ -246,6 +246,8 @@ TODO: formatting steps
 TODO: Install rootfs
 
 TODO: Setup inittab
+
+`echo "ttyO2::respawn:/sbin/getty -L ttyO2 115200 vt100" >> /system/etc/inittab`
 
 TODO: Install (non-free) TI WIFI firmware
 
