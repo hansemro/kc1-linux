@@ -108,6 +108,18 @@
 
 	clock-frequency = <400000>;
 
+	bat: battery {
+		compatible = "simple-battery";
+		/* Documentation/devicetree/bindings/power/supply/battery.yaml */
+	};
+
+	ti,bq27541@55 {
+		compatible = "ti,bq27541";
+		reg = <0x55>;
+		monitored-battery = <&bat>;
+		/* Documentation/devicetree/bindings/power/supply/bq27xxx.yaml */
+	};
+
 	twl: twl@48 {
 		reg = <0x48>;
 		/* IRQ# = 7 */
