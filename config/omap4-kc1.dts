@@ -30,6 +30,11 @@
 			max-brightness = <127>;
 		};
 	};
+
+	bat: battery {
+		compatible = "simple-battery";
+		/* Documentation/devicetree/bindings/power/supply/battery.yaml */
+	};
 };
 
 &omap4_pmx_core {
@@ -107,11 +112,6 @@
 	pinctrl-0 = <&i2c1_pins>;
 
 	clock-frequency = <400000>;
-
-	bat: battery {
-		compatible = "simple-battery";
-		/* Documentation/devicetree/bindings/power/supply/battery.yaml */
-	};
 
 	ti,bq27541@55 {
 		compatible = "ti,bq27541";
