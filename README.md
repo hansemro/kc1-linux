@@ -3,6 +3,8 @@ Mainline Linux on (First Generation) Kindle Fire
 
 Maintained by Hansem Ro (`hansemro@outlook.com`).
 
+Disclaimer: Your warranty is now void (if not already) and I am not responsible for any incurred damages. For assistance, reach out or submit an issue.
+
 Documentation for bringing up mainline Linux on First Generation Kindle Fire tablet (also known as Otter or KC1).
 
 Status
@@ -54,6 +56,10 @@ This project requires the following:
 
 - TODO (Please refer to build requirements for kernel and u-boot for your distro)
 
+### Setting up and connecting to UART port
+
+TODO: Add hardware guide based off information found [here](https://web.archive.org/web/20141225213214/http://forum.xda-developers.com/showthread.php?t=1471813).
+
 Build Guide
 ===========
 
@@ -94,6 +100,7 @@ cd u-boot
 You may encounter errors while building the kernel. Fortunately, many of which have solutions that can be looked up. Patches to fix build issues may come in the future.
 
 ```
+# pwd=kc1-linux/
 git clone https://github.com/hansemro/linux.git mainline
 cp scripts/make-linux.sh mainline/make.sh
 cp config/omap4_kc1.config mainline/.config
