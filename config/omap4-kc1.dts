@@ -151,6 +151,12 @@
 	pinctrl-0 = <&i2c4_pins>;
 
 	clock-frequency = <400000>;
+
+	tmp@48 {
+		compatible = "ti,tmp105";
+		reg = <0x48>;
+		status = "okay";
+	};
 };
 
 &mmc1 {
