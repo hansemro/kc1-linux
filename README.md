@@ -12,6 +12,33 @@ Mainline kernel boots with at least a working UART console and usb ethernet (CDC
 
 Note that older kernels that were used for Android have more functional drivers (such as support for framebuffer and touchscreen).
 
+### Device Tree Status Table
+
+| Hardware | Status | Comments |
+| --- | --- | --- |
+| CPU | &check; | TI OMAP4430 |
+| GPU | &cross; | PowerVR SGX540 |
+| UART | &check; | UART3 = `/dev/ttyO2` |
+| eMMC | &check; | Issue: device assigns to `/dev/mmcblk0` or `/dev/mmcblk1` |
+| Green LED | &check; | PWM led |
+| Orange LED | &check; | PWM led |
+| Power Button | &check; | TI TWL6030 |
+| USB OTG | &check; |  |
+| LCD Panel | &cross; |  |
+| LCD Backlight | &cross; | OMAP PWM |
+| Framebuffer | &cross; |  |
+| WLAN | &cross; | TI WL127x |
+| Touchscreen | &cross; | Ilitek 210x Touchscreen Controller |
+| Accelerometer | &cross; | Bosch BMA250 |
+| Fuel Gauge | &cross; | TI BQ27541 |
+| Charger Controller | &cross; | Sumit SMB347 |
+| Audio | &cross; | TI TWL6040 |
+| Audio Codec | &cross; | TI AIC3110 |
+| Temperature Sensor | &cross; | National Semiconductor/TI LM75 ~ TI TMP105 |
+| Light Sensor | &cross; |  |
+| LPDDR2 | &check; | emif? |
+| RTC | &check; | TI TWL6030 |
+
 Setup
 =====
 
