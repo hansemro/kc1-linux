@@ -26,11 +26,12 @@ BUILD_TIME=`date +"%Y-%m-%d-%H-%M"`
 build_boot_img() {
     cp ../arch/arm/boot/zImage ./$BUILD_TIME-zImage
     cp ../.config ./$BUILD_TIME-config
-    cp ../arch/arm/boot/dts/omap4-kc1.dtb ./
+    cp ../arch/arm/boot/dts/omap4-kc1.dtb ./$BUILD_TIME-omap4-kc1.dtb
 
     echo "Building $BUILD_TIME-boot.img"
 
-    mkbootimg --kernel ./$BUILD_TIME-zImage --dt omap4-kc1.dtb \
+    mkbootimg --kernel ./$BUILD_TIME-zImage \
+        --dt $BUILD_TIME-omap4-kc1.dtb \
         --pagesize 2048 --base 0x80000000 \
         --ramdisk_offset 0x01000000  --kernel_offset 0x00008000 \
         --second_offset 0x00f00000 --tags_offset 0x100 \
