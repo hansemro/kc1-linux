@@ -66,6 +66,10 @@ Build Guide
 
 ### Toolchain
 
+You can decide whether to use a prebuilt toolchain or compile your own with `crosstool-ng`.
+
+#### Prebuilt Toolchain
+
 For this project, we will be using Linaro 4.9 for u-boot and Linaro 6.5 for the Linux kernel.
 
 ```
@@ -82,9 +86,49 @@ $ tar -xvf gcc-linaro-6.5*.tar.xz
 Add the following to `~/.bashrc` and then source it:
 
 ```
+## Change ARM_TOOLCHAINS_DIR if necessary
 $ export ARM_TOOLCHAINS_DIR=$HOME/arm_toolchains
 $ export LIN49_ARM_EABI=$ARM_TOOLCHAINS_DIR/gcc-linaro-4.9-2016.02-x86_64_arm-eabi/bin/arm-eabi-
 $ export LIN65_ARM_LHF=$ARM_TOOLCHAINS_DIR/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+```
+
+#### crosstool-NG Toolchain
+
+TODO: test with mainline kernel
+
+```
+## Building toolchain for linux
+$ git clone https://github.com/crosstool-ng/crosstool-ng
+$ cd crosstool-ng
+$ ./bootstrap
+$ ./configure --prefix=${crosstool-ng-install-location}
+$ echo export PATH=\$PATH:${crosstool-ng-install-location/bin} > ~/.bashrc
+$ source ~/.bashrc
+$ ct-ng list-samples
+$ ct-ng show-arm-cortexa9_neon-linux-gnueabihf
+$ ct-ng arm-cortexa9_neon-linux-gnueabihf
+$ ct-ng nconfig
+## Change linux headers if needed:
+##		Operating System->Version of Linux
+##
+##		Note: 3.4.113 works for 3.4.x Android kernel by Hashcode
+##
+## Change C compiler version if needed:
+## 		C compiler->Version of gcc
+##
+##		Note: 6.5.0 works for 3.4.x Android kernel by Hashcode
+##
+## then save the config and exit
+$ ct-ng build.$(nproc)
+```
+
+### omap4boot
+
+```
+## pwd=kc1-linux/
+$ git clone https://github.com/al177/omap4boot.git
+$ cd omap4boot
+$ make TOOLCHAIN=${LIN49_ARM_EABI}
 ```
 
 ### U-Boot (based off Hashcode fork)
@@ -130,6 +174,8 @@ TODO: Finish step
 
 ### 2. Installing U-Boot
 
+Good practice: Test the bootloader before flashing with `omap4boot/usbboot`. This is to prevent potential bricks caused by a bad bootloader.
+
 In fastboot mode, flash u-boot bootloader: `$ fastboot flash bootloader u-boot.bin`
 
 ### 3. Installing TWRP recovery (and backuping data)
@@ -159,11 +205,48 @@ $ adb shell "echo "p" | parted /dev/block/mmcblk0" > partition_info.txt
 
 TODO: Repartition with parted tool while in recovery
 
+#### Modified partition layout:
+
+TODO: Improve layout and add steps
+
+Goal: Expand system partition; Shrink media partition
+
+```
+## Modified partition layout below
+## Use parted to resize (resize), remove (rm),
+## and make (mkpart) partitions
+## Afterwards, use mke2fs to format partitions
+$ adb shell
+# parted /dev/block/mmcblk0
+(parted) print
+Model: MMC M8G2FA (sd/mmc)
+Disk /dev/block/mmcblk0: 7734MB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+
+Number  Start   End     Size    File system  Name        Flags
+ 1      131kB   262kB   131kB                xloader
+ 2      262kB   524kB   262kB                bootloader
+ 3      524kB   11.0MB  10.5MB               dkernel
+ 4      11.0MB  212MB   201MB                dfs
+ 5      212MB   229MB   16.8MB               recovery
+ 6      229MB   296MB   67.1MB               backup
+ 7      296MB   307MB   10.5MB               boot
+ 8      307MB   312MB   5243kB               splash
+ 9      312MB   4931MB  4619MB  ext4         system
+10      4931MB  5443MB  512MB   ext4         userdata
+11      5443MB  5699MB  256MB   ext4         cache
+12      5699MB  7235MB  1536MB  fat16        media       msftres
+```
+
+TODO: formatting steps
+
 TODO: Install rootfs
+TODO: Setup inittab
 
 ### 5. Installing Kernel + Modules + DTB
 
-TODO: Finish step
+TODO: Write install script
 
 ```
 ## pwd=kc1-linux/mainline/
@@ -172,7 +255,9 @@ $ adb shell mount /dev/block/mmcblk0p9 /system
 ## installing kernel and dtb in /boot/ of the system partition
 $ adb push arch/arm/boot/zImage /system/boot/
 $ adb push arch/arm/boot/dts/omap4-kc1.dtb /system/boot/
-## TODO: installing modules
+## remove conflicting modules directory if present
+$ adb shell rm -rf /system/lib/modules/$LIN_VERSION
+$ adb push arch/arm/boot/lib/modules/$LIN_VERSION /system/lib/modules/
 ```
 
 ### 6. Booting Kernel
@@ -203,10 +288,7 @@ Brick Recovery
 TODO: Create recovery guide based off usbboot mechanism.
 
 ```
-$ git clone https://github.com/al177/omap4boot.git
-$ cd omap4boot
-$ make TOOLCHAIN=${LIN49_ARM_EABI}
-$ cd out/panda/
+$ cd kc1-linux/omap4boot/out/panda/
 ## Boot into TWRP recovery (for adb) or u-boot (for fastboot)
 $ ./usbboot ./aboot.bin <twrp.img|u-boot.bin>
 ```
