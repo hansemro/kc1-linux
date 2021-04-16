@@ -35,9 +35,7 @@ build_boot_img() {
         --pagesize 2048 --base 0x80000000 \
         --ramdisk_offset 0x01000000  --kernel_offset 0x00008000 \
         --second_offset 0x00f00000 --tags_offset 0x100 \
-        --cmdline "newbootargs console=ttyO2,115200n8 \
-        root=/dev/mmcblk0p9 mem=512M vram=24M omapfb.vram=0:8M \
-        omapdss.def_disp=lcd2 omapdss.debug=y" -o $BUILD_TIME-boot.img
+        --cmdline "root=/dev/mmcblk0p9" -o $BUILD_TIME-boot.img
 
     echo "Successfully built $BUILD_TIME-boot.img"
 
