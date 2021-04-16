@@ -5,7 +5,7 @@ Maintained by Hansem Ro (`hansemro@outlook.com`).
 
 Disclaimer: Your warranty is now void (if not already) and I am not responsible for any incurred damages. For assistance, reach out or submit an issue.
 
-Documentation for bringing up mainline Linux on First Generation Kindle Fire tablet (also known as Otter or KC1).
+This repo contains documentation for bringing up mainline Linux on First Generation Kindle Fire tablet (also known as Otter or KC1).
 
 Status
 ======
@@ -17,7 +17,7 @@ Note that older kernels that were used for Android have more functional drivers 
 ### Device Tree Status Table
 
 | Hardware           | Status  | Comments |
-| ------------------ | ------- | --- |
+| ------------------ | ------- | -------- |
 | CPU                | &check; | TI OMAP4430 |
 | GPU                | &cross; | PowerVR SGX540 |
 | UART               | &check; | UART3 = `/dev/ttyO2` |
@@ -25,7 +25,7 @@ Note that older kernels that were used for Android have more functional drivers 
 | Green LED          | &check; | PWM led |
 | Orange LED         | &check; | PWM led |
 | Power Button       | &check; | TI TWL6030 |
-| USB OTG            | &check; |  |
+| USB OTG            | &check; | GPIO |
 | LCD Panel          | &cross; | 1024x600 16 bits/pixel |
 | LCD Backlight      | &cross; | OMAP PWM |
 | Framebuffer        | &cross; | Memory address at 0x9fec4000 ? |
@@ -38,7 +38,7 @@ Note that older kernels that were used for Android have more functional drivers 
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | TI AIC3110 |
 | Temperature Sensor | &cross; | National Semiconductor/TI LM75 ~ TI TMP105 |
-| Light Sensor       | &cross; | ? |
+| Light Sensor       | &cross; | SenseTek STK22x7 |
 | LPDDR2             | &check; | emif? |
 | RTC                | &check; | TI TWL6030 |
 
@@ -55,7 +55,9 @@ This project requires the following:
 
 ### Software Requirements
 
+- Android Platform Tools (adb, fastboot)
 - TODO (Please refer to build requirements for kernel and u-boot for your distro)
+- TODO udev rule for Kindle Fire
 
 ### Setting up and connecting to UART port
 
@@ -66,7 +68,7 @@ Build Guide
 
 ### Toolchain
 
-You can decide whether to use a prebuilt toolchain or compile your own with `crosstool-ng`.
+You can decide whether to use a prebuilt toolchain or compile your own with `crosstool-ng`. If you are unsure, just use a prebuilt toolchain from Linaro or Bootlin.
 
 #### Prebuilt Toolchain
 
@@ -242,7 +244,10 @@ Number  Start   End     Size    File system  Name        Flags
 TODO: formatting steps
 
 TODO: Install rootfs
+
 TODO: Setup inittab
+
+TODO: Install (non-free) TI WIFI firmware
 
 ### 5. Installing Kernel + Modules + DTB
 
