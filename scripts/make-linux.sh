@@ -43,6 +43,9 @@ if [ "$1" == "clean" ]; then
     $MK clean
     rm -rf arch/arm/boot/lib
     rm -rf arch/arm/boot/dts/*.dtb
+elif [ "$1" == "dtb" ]; then
+    cpp -nostdinc -I include -I arch  -undef -x assembler-with-cpp arch/arm/boot/dts/omap4-kc1.dts arch/arm/boot/dts/omap4-kc1.dts.preprocessed
+    dtc -I dts -O dtb arch/arm/boot/dts/omap4-kc1.dts.preprocessed -o arch/arm/boot/dts/omap4-kc1.dtb
 elif [ "$1" != "" ]; then
     $MK $1
 else
