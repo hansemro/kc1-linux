@@ -30,6 +30,11 @@
 			max-brightness = <127>;
 		};
 	};
+
+	bat: battery {
+		compatible = "simple-battery";
+		/* Documentation/devicetree/bindings/power/supply/battery.yaml */
+	};
 };
 
 &omap4_pmx_core {
@@ -108,6 +113,13 @@
 
 	clock-frequency = <400000>;
 
+	ti,bq27541@55 {
+		compatible = "ti,bq27541";
+		reg = <0x55>;
+		monitored-battery = <&bat>;
+		/* Documentation/devicetree/bindings/power/supply/bq27xxx.yaml */
+	};
+
 	twl: twl@48 {
 		reg = <0x48>;
 		/* IRQ# = 7 */
@@ -139,6 +151,12 @@
 	pinctrl-0 = <&i2c4_pins>;
 
 	clock-frequency = <400000>;
+
+	tmp@48 {
+		compatible = "ti,tmp105";
+		reg = <0x48>;
+		status = "okay";
+	};
 };
 
 &mmc1 {
