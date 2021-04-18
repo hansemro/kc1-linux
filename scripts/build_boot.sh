@@ -2,6 +2,9 @@
 
 # Maintained by Hansem Ro (hansemro@outlook.com)
 
+LINUX_DIR=$PWD/..
+BUILD_DIR=$PWD
+
 # Build Android boot image (boot.img)
 #
 # Setup:
@@ -25,26 +28,62 @@
 
 BUILD_TIME=`date +"%Y-%m-%d-%H-%M"`
 
+# build_boot_img: Build Android boot image with the following:
+#                   - kernel (linux/arch/arm/boot/zImage)
+#                   - device tree blob (linux/arch/arm/boot/dts/omap4-kc1.dtb)
+#                   - offset parameters
+#                   - cmdline
+#
+#                 The new boot image (along with the zImage, dtb, and config) will
+#                 be located at build/<build_time>/boot.img.
+#
+#                 In addition, a link to the most recently-created image
+#                 will be made (prev-boot.img).
 build_boot_img() {
-    cp ../arch/arm/boot/zImage ./$BUILD_TIME-zImage
-    cp ../.config ./$BUILD_TIME-config
-    cp ../arch/arm/boot/dts/omap4-kc1.dtb ./$BUILD_TIME-omap4-kc1.dtb
+    mkdir -p build/$BUILD_TIME
+    cd build/$BUILD_TIME
+    cp $LINUX_DIR/arch/arm/boot/zImage ./zImage
+    cp $LINUX_DIR/.config ./config
+    cp $LINUX_DIR/arch/arm/boot/dts/omap4-kc1.dtb ./omap4-kc1.dtb
 
-    echo "Building $BUILD_TIME-boot.img"
+    echo "Building build/$BUILD_TIME/boot.img"
 
-    mkbootimg --kernel ./$BUILD_TIME-zImage \
-        --dt $BUILD_TIME-omap4-kc1.dtb \
+    mkbootimg --kernel ./zImage \
+        --dt omap4-kc1.dtb \
         --pagesize 2048 --base 0x80000000 \
         --ramdisk_offset 0x01000000  --kernel_offset 0x00008000 \
         --second_offset 0x00f00000 --tags_offset 0x100 \
-        --cmdline "root=/dev/mmcblk0p9" -o $BUILD_TIME-boot.img
-
-    echo "Successfully built $BUILD_TIME-boot.img"
+        --cmdline "root=/dev/mmcblk0p9" -o boot.img
 
     # Create link to the most recently created boot image
-    echo "Linking $BUILD_TIME-boot.img as prev-boot.img"
+    cd $BUILD_DIR
+    echo "Linking build/$BUILD_TIME/boot.img as prev-boot.img"
     rm prev-boot.img
-    ln -s $BUILD_TIME-boot.img prev-boot.img
+    ln -s build/$BUILD_TIME/boot.img prev-boot.img
+}
+
+# boot_target: Boot passed image with fastboot
+#   @param 1 : boot image file
+boot_target() {
+    if [ -L $1 ]; then
+        echo "Booting $(readlink $1) with fastboot"
+        fastboot boot $1
+    elif [ -f $1 ]; then
+        echo "Booting $1 with fastboot"
+        fastboot boot $1
+    fi
+}
+
+# flash_target: Flash passed image with fastboot
+#   @param 1 : boot image file
+flash_target() {
+    if [ -L $1 ]; then
+        echo "Flashing $(readlink $1) with fastboot"
+        fastboot flash boot $1
+    elif [ -f $1 ]; then
+        echo "Flashing $1 with fastboot"
+        fastboot flash boot $1
+    fi
 }
 
 if [ "$1" == "help" ]; then
@@ -60,22 +99,18 @@ if [ "$1" == "help" ]; then
     echo "./build_boot.sh flash_prev : just flash previously built image" \
                                             "with fastboot"
 elif [ "$1" == "boot_prev" ]; then
-    echo "Booting prev-boot.img with fastboot"
-    fastboot boot prev-boot.img
+    boot_target prev-boot.img
 elif [ "$1" == "flash_prev" ]; then
-    echo "Flashing prev-boot.img with fastboot"
-    fastboot flash boot prev-boot.img
+    flash_target prev-boot.img
 else
-    if ! [ -f ../arch/arm/boot/zImage ]; then
+    if ! [ -f $LINUX_DIR/arch/arm/boot/zImage ]; then
         echo "Error: missing zImage" >&2
     else
         build_boot_img
         if [ "$1" == "boot" ]; then
-            echo "Booting $BUILD_TIME-boot.img with fastboot"
-            fastboot boot $BUILD_TIME-boot.img
+            boot_target $BUILD_DIR/build/$BUILD_TIME/boot.img
         elif [ "$1" == "flash" ]; then
-            echo "Flashing $BUILD_TIME-boot.img with fastboot"
-            fastboot flash boot $BUILD_TIME-boot.img
+            flash_target $BUILD_DIR/build/$BUILD_TIME/boot.img
         fi
     fi
 fi
