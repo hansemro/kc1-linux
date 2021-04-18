@@ -292,9 +292,67 @@ TODO: Setup inittab
 
 TODO: Install (non-free) TI WIFI firmware
 
-### 5. Installing Kernel + Modules + DTB
+### 5. Installing/Booting Kernel + DTB + Modules
 
-TODO: Write install script
+There are two main ways to load the kernel:
+
+1. boot as Android boot image
+2. manual booting with U-Boot commands
+
+For ease of use, go with method 1 (via Script method). However, you can't go wrong with method 2 if want to make sure everything is working correctly.
+
+#### Script method
+
+Install scripts to a build directory in the kernel directory.
+
+```
+## pwd=kc1-linux/mainline
+## Prepare build directory with scripts
+$ mkdir -p build
+$ cp ../scripts/build_boot.sh build/
+$ cp ../scripts/boot.sh build/
+$ cp ../scripts/push_modules.sh build/
+```
+
+Install with scripts:
+
+```
+## pwd=kc1-linux/mainline/boot
+## While in recovery, mount system partition
+$ adb shell mount /dev/block/mmcblk0p9 /system
+## Push kernel modules to system partition
+$ ./push_modules.sh
+## Install kernel+dtb as Android boot image
+##
+## build_boot.sh usage:
+##    ./build_boot.sh            : build Android boot image
+##    ./build_boot.sh help       : print help message
+##    ./build_boot.sh boot       : build and boot Android boot image
+##    ./build_boot.sh boot_prev  : boot previously built image
+##    ./build_boot.sh flash      : build and flash Android boot image
+##    ./build_boot.sh flash_prev : flash previously built image
+##
+## RECOMMENDED: Flash if you are condident the image is stable
+##              and boot if you are just testing.
+$ ./build_boot.sh flash
+```
+
+Tip for testing device tree changes:
+
+Since the kernel does not have to be recompiled whenever you modify the device tree, you can just rebuild the boot image with the new blobs.
+
+```
+## pwd=kc1-linux/mainline
+## Step 1: build dtb
+$ ./make.sh dtb
+## Step 2: build boot image
+$ cd build
+$ ./build_boot.sh [build|flash]
+```
+
+#### Manual method
+
+Install the kernel, dtb, and kernel modules in system partition:
 
 ```
 ## pwd=kc1-linux/mainline/
@@ -306,13 +364,10 @@ $ adb push arch/arm/boot/dts/omap4-kc1.dtb /system/boot/
 ## remove conflicting modules directory if present
 $ adb shell rm -rf /system/lib/modules/$LIN_VERSION
 $ adb push arch/arm/boot/lib/modules/$LIN_VERSION /system/lib/modules/
+$ adb shell sync
 ```
 
-### 6. Booting Kernel
-
-TODO: Finish step
-
-Enter U-Boot console (accessed only via UART console) and run the following to boot the kernel (with dtb) in the system partition (mmcblk0p9).
+Reboot and enter U-Boot console (accessed only via UART console). Then run the following to boot the kernel (with dtb) in the system partition (mmcblk0p9).
 
 ```
 ## Connect to Kindle over UART
