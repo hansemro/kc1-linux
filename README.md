@@ -38,7 +38,7 @@ Note that older kernels that were used for Android have more functional drivers 
 | Charger Controller | &cross; | Sumit SMB347 |
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | TI AIC3110 |
-| Temperature Sensor | &cross; | National Semiconductor/TI LM75 ~ TI TMP105 |
+| Temperature Sensor | &check; | National Semiconductor/TI LM75 ~ TI TMP105 |
 | Light Sensor       | &cross; | Sensortek STK22x7 |
 | LPDDR2             | &check; | emif? |
 | RTC                | &check; | TI TWL6030 |
