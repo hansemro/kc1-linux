@@ -53,16 +53,16 @@ if [ "$1" == "help" ]; then
     echo "./build_boot.sh help       : print this help message and exit"
     echo "./build_boot.sh boot       : build boot image and boot with" \
                                             "fastboot"
-    echo "./build_boot.sh just_boot  : just boot previously built image" \
+    echo "./build_boot.sh boot_prev  : just boot previously built image" \
                                             "with fastboot"
     echo "./build_boot.sh flash      : build boot image and flash boot" \
                                             "partition with fastboot"
-    echo "./build_boot.sh just_flash : just flash previously built image" \
+    echo "./build_boot.sh flash_prev : just flash previously built image" \
                                             "with fastboot"
-elif [ "$1" == "just_boot" ]; then
+elif [ "$1" == "boot_prev" ]; then
     echo "Booting prev-boot.img with fastboot"
     fastboot boot prev-boot.img
-elif [ "$1" == "just_flash" ]; then
+elif [ "$1" == "flash_prev" ]; then
     echo "Flashing prev-boot.img with fastboot"
     fastboot flash boot prev-boot.img
 else
