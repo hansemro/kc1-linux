@@ -6,6 +6,7 @@
 #   ./make-linux.sh         : build kernel + modules
 #   ./make-linux.sh clean   : cleanup kernel and modules
 #   ./make-linux.sh command : same as make ARCH=arm CROSS_COMPILE=... command
+#   ./make-linux.sh dtb     : build omap4-kc1.dtb
 
 # Make script inspired by Hector Martin
 # https://www.youtube.com/watch?v=x8f9-E_eP4M
@@ -41,7 +42,13 @@ function show_time () {
     echo "$day"d "$hour"h "$min"m "$sec"s
 }
 
-if [ "$1" == "clean" ]; then
+
+if [ "$1" == "help" ]; then
+    echo "./make-linux.sh         : build kernel + modules"
+    echo "./make-linux.sh clean   : cleanup kernel and modules"
+    echo "./make-linux.sh command : same as make ARCH=arm CROSS_COMPILE=... command"
+    echo "./make-linux.sh dtb     : build omap4-kc1.dtb"
+elif [ "$1" == "clean" ]; then
     $MK clean
     rm -rf arch/arm/boot/lib
     rm -rf arch/arm/boot/dts/*.dtb
