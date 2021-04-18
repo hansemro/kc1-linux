@@ -29,11 +29,12 @@ Note that older kernels that were used for Android have more functional drivers 
 | LCD Panel          | &cross; | 1024x600 16 bits/pixel |
 | LCD Backlight      | &cross; | OMAP PWM |
 | Framebuffer        | &cross; | Memory address at 0x9fec4000 ? |
-| Battery/PMIC       | &cross; | TI TWL6030 |
+| Battery            | &check; | 3V3 4400mAh Li-Ion Battery |
+| PMIC               | &cross; | TI TWL6030 |
 | WLAN               | &cross; | TI WL127x |
 | Touchscreen        | &cross; | Ilitek 210x Touchscreen Controller |
 | Accelerometer      | &cross; | Bosch BMA250 |
-| Fuel Gauge         | &cross; | TI BQ27541 |
+| Fuel Gauge         | &check; | TI BQ27541 |
 | Charger Controller | &cross; | Sumit SMB347 |
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | TI AIC3110 |
