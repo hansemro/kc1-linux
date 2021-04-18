@@ -90,9 +90,9 @@ Add the following to `~/.bashrc` and then source it:
 
 ```
 ## Change ARM_TOOLCHAINS_DIR if necessary
-$ export ARM_TOOLCHAINS_DIR=$HOME/arm_toolchains
-$ export LIN49_ARM_EABI=$ARM_TOOLCHAINS_DIR/gcc-linaro-4.9-2016.02-x86_64_arm-eabi/bin/arm-eabi-
-$ export LIN65_ARM_LHF=$ARM_TOOLCHAINS_DIR/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
+export ARM_TOOLCHAINS_DIR=$HOME/arm_toolchains
+export LIN49_ARM_EABI=$ARM_TOOLCHAINS_DIR/gcc-linaro-4.9-2016.02-x86_64_arm-eabi/bin/arm-eabi-
+export LIN65_ARM_LHF=$ARM_TOOLCHAINS_DIR/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
 ```
 
 #### crosstool-NG Toolchain
