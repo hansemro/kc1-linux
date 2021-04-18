@@ -8,7 +8,7 @@ BUILD_DIR=$PWD
 # Build Android boot image (boot.img)
 #
 # Setup:
-#   Create build directory inside Linux kernel
+#   Create build directory inside Linux kernel directory
 #       $ mkdir linux/build
 #   Place this script to build directory
 #       $ cp build_boot.sh linux/build
