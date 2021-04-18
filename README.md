@@ -144,6 +144,18 @@ $ cd u-boot
 $ ./make.sh
 ```
 
+### mkbootimg
+
+TODO: test with newer versions of mkbootimg
+
+```
+## pwd=kc1-linux/
+$ git clone https://github.com/CyanogenMod/android_system_core.git
+$ cd android_system_core/mkbootimg
+$ echo "export PATH=$PWD:\$PATH" >> ~/.bashrc
+$ export PATH=$PWD:$PATH
+```
+
 ### Linux
 
 You may encounter errors while building the kernel. Fortunately, many of which have solutions that can be looked up. Patches to fix build issues may come in the future.
