@@ -4,6 +4,7 @@
 
 LINUX_DIR=$PWD/..
 BUILD_DIR=$PWD
+BUILD_TIME=`date +"%Y-%m-%d-%H-%M"`
 
 # Build Android boot image (boot.img)
 #
@@ -26,7 +27,7 @@ BUILD_DIR=$PWD
 #   flash_prev  : just flash previously-built image with fastboot
 #
 
-BUILD_TIME=`date +"%Y-%m-%d-%H-%M"`
+CMDLINE="root=/dev/mmcblk0p9"
 
 # build_boot_img: Build Android boot image with the following:
 #                   - kernel (linux/arch/arm/boot/zImage)
@@ -53,7 +54,7 @@ build_boot_img() {
         --pagesize 2048 --base 0x80000000 \
         --ramdisk_offset 0x01000000  --kernel_offset 0x00008000 \
         --second_offset 0x00f00000 --tags_offset 0x100 \
-        --cmdline "root=/dev/mmcblk0p9" -o boot.img
+        --cmdline "$CMDLINE" -o boot.img
 
     # Create link to the most recently created boot image
     cd $BUILD_DIR
