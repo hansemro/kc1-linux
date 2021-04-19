@@ -26,7 +26,7 @@ Note that older kernels that were used for Android have more functional drivers 
 | Orange LED         | &check; | PWM led |
 | Power Button       | &check; | TI TWL6030 |
 | USB OTG            | &check; | GPIO |
-| LCD Panel          | &cross; | 1024x600 16 bits/pixel |
+| LCD Panel          | &cross; | 1024x600 32 bits/pixel |
 | LCD Backlight      | &cross; | OMAP PWM |
 | Framebuffer        | &cross; | Memory address at 0x9fec4000 ? |
 | Battery            | &check; | 3V3 4400mAh Li-Ion Battery |
