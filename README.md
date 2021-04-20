@@ -27,8 +27,8 @@ Note that older kernels that were used for Android have more functional drivers 
 | Power Button       | &check; | TI TWL6030 |
 | USB OTG            | &check; | GPIO |
 | LCD Panel          | &cross; | 1024x600 32 bits/pixel |
-| LCD Backlight      | &cross; | OMAP PWM |
-| Framebuffer        | &cross; | Memory address at 0x9fec4000 ? |
+| LCD Backlight      | &cross; | PWM driven |
+| Framebuffer        | &cross; | omapfb |
 | Battery            | &check; | 3V3 4400mAh Li-Ion Battery |
 | PMIC               | &cross; | TI TWL6030 |
 | WLAN               | &cross; | TI WL127x |
@@ -258,49 +258,43 @@ $ adb shell "echo "p" | parted /dev/block/mmcblk0" > partition_info.txt
 
 ### 4. Repartitioning and Installing rootfs
 
-TODO: Repartition with parted tool while in recovery
-
-#### Modified partition layout:
-
-TODO: Improve layout and add steps
-
-Goal: Expand system partition; Shrink media partition
+The stock partition layout (as shown in `stock_partition_table.txt`) originally maps more space to user-controlled partition called `media`. However, the `media` partition doesn't serve much purpose for Linux. So to allocate more space to the root filesystem, I decided to shrink the `media` partition with enough space for TWRP and expand the `system` partition (as shown in `linux_partition_table.txt`). Feel free to approach this another way as many of these decisions were arbitrary.
 
 ```
-## Modified partition layout below
-## Use parted to resize (resize), remove (rm),
-## and make (mkpart) partitions
-## Afterwards, use mke2fs to format partitions
+## Note: take your liberties on userdata and cache partitions.
+## While in recovery mode and connected to a computer, enter adb shell
 $ adb shell
 # parted /dev/block/mmcblk0
-(parted) print
-Model: MMC M8G2FA (sd/mmc)
-Disk /dev/block/mmcblk0: 7734MB
-Sector size (logical/physical): 512B/512B
-Partition Table: gpt
-
-Number  Start   End     Size    File system  Name        Flags
- 1      131kB   262kB   131kB                xloader
- 2      262kB   524kB   262kB                bootloader
- 3      524kB   11.0MB  10.5MB               dkernel
- 4      11.0MB  212MB   201MB                dfs
- 5      212MB   229MB   16.8MB               recovery
- 6      229MB   296MB   67.1MB               backup
- 7      296MB   307MB   10.5MB               boot
- 8      307MB   312MB   5243kB               splash
- 9      312MB   4931MB  4619MB  ext4         system
-10      4931MB  5443MB  512MB   ext4         userdata
-11      5443MB  5699MB  256MB   ext4         cache
-12      5699MB  7235MB  1536MB  fat16        media       msftres
+(parted) rm 10
+(parted) rm 11
+(parted) rm 12
+(parted) resize 9
+Start? [312MB]? 312MB
+End? [849MB]? 4931MB
+(parted) mkpart 10 4931 5443
+(parted) mkpart 11 5443 5699
+(parted) mkpart 12 5699 7235
+(parted) name 10 userdata
+(parted) name 11 cache
+(parted) name 12 media
+## Check your result with p (which prints partition layout)
+(parted) p
+...
+(parted) quit
+# mke2fs -T ext4 /dev/block/mmcblk0p9
+# mke2fs -T ext4 /dev/block/mmcblk0p10
+# mke2fs -T ext4 /dev/block/mmcblk0p11
+# mkdosfs /dev/block/mmcblk0p12
 ```
-
-TODO: formatting steps
 
 TODO: Install rootfs
 
 TODO: Setup inittab
 
-`echo "ttyO2::respawn:/sbin/getty -L ttyO2 115200 vt100" >> /system/etc/inittab`
+```
+## Inside adb shell with the system partition mounted
+# echo "ttyO2::respawn:/sbin/getty -L ttyO2 115200 vt100" >> /system/etc/inittab
+```
 
 TODO: Install (non-free) TI WIFI firmware
 
