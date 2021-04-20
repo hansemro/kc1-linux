@@ -1,0 +1,24 @@
+~ # parted /dev/block/mmcblk0
+GNU Parted 1.8.8.1.179-aef3
+Using /dev/block/mmcblk0
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) p
+p
+Model: MMC M8G2FA (sd/mmc)
+Disk /dev/block/mmcblk0: 7734MB
+Sector size (logical/physical): 512B/512B
+Partition Table: gpt
+
+Number  Start   End     Size    File system  Name        Flags
+ 1      131kB   262kB   131kB                xloader
+ 2      262kB   524kB   262kB                bootloader
+ 3      524kB   11.0MB  10.5MB               dkernel
+ 4      11.0MB  212MB   201MB                dfs
+ 5      212MB   229MB   16.8MB               recovery
+ 6      229MB   296MB   67.1MB               backup
+ 7      296MB   307MB   10.5MB                boot
+ 8      307MB   312MB   5243kB               splash
+ 9      312MB   4931MB  4619MB  ext4         system
+10      4931MB  5443MB  512MB   ext4         userdata
+11      5443MB  5699MB  256MB   ext4         cache
+12      5699MB  7235MB  1536MB  fat16        media       msftres
