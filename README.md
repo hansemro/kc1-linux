@@ -67,6 +67,12 @@ TODO: Add hardware guide based off information found [here](https://web.archive.
 Build Guide
 ===========
 
+Start by cloning this repo which contains configuration files and some helper scripts used in the steps below:
+
+```
+$ git clone https://github.com/hansemro/kc1-linux
+```
+
 ### Toolchain
 
 You can decide whether to use a prebuilt toolchain or compile your own with `crosstool-ng`. If you are unsure, just use a prebuilt toolchain from Linaro or Bootlin.
