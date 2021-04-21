@@ -162,7 +162,8 @@ You may encounter errors while building the kernel. Fortunately, many of which h
 
 ```
 ## pwd=kc1-linux/
-$ git clone https://github.com/hansemro/linux.git mainline
+## My fork: https://github.com/hansemro/linux.git
+$ git clone https://github.com/torvalds/linux.git mainline
 $ cp scripts/make-linux.sh mainline/make.sh
 $ cp config/omap4_kc1.config mainline/.config
 $ cp config/omap4-kc1.dts mainline/arch/arm/boot/dts/
@@ -189,7 +190,7 @@ $ cd ..
 $ cp scripts/rcS rootfs/etc/init.d/
 $ chmod +x rootfs/etc/init.d/rcS
 $ git clone https://git.busybox.net/busybox
-$ cp config/busybox.config busybox
+$ cp config/busybox.config busybox/.config
 $ cd buxybox
 $ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} -j${nproc}
 $ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} install
