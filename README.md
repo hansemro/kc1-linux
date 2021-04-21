@@ -176,6 +176,27 @@ $ git checkout f40ddce88593482919761f74910f42f4b84c004b
 $ ./make.sh
 ```
 
+### BusyBox Rootfs
+
+This step is not mandatory. I am including it because the steps were simple. In the future, I plan to provide a postmarketOS rootfs port.
+
+```
+## pwd kc1-linux/
+$ mkdir -p rootfs/etc/init.d/
+$ cd rootfs
+$ mkdir proc sys dev
+$ cd ..
+$ cp scripts/rcS rootfs/etc/init.d/
+$ chmod +x rootfs/etc/init.d/rcS
+$ git clone https://git.busybox.net/busybox
+$ cp config/busybox.config busybox
+$ cd buxybox
+$ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} -j${nproc}
+$ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} install
+$ cd ../rootfs
+$ tar -czvf ../rootfs.tar.gz ./
+```
+
 Install Guide
 =============
 
@@ -227,9 +248,9 @@ $ adb reboot
 
 The Kindle should now be in fastboot mode. Check `fastboot devices` to see if the Kindle is properly identified and accessible.
 
-### 2. Installing U-Boot
+### 2. (Testing and) Installing U-Boot
 
-Good practice: Test the bootloader before flashing with `omap4boot/usbboot`. This is to prevent potential bricks caused by a bad bootloader.
+Good practice: Use `omap4boot/usbboot` utility to test bootloader images without flashing. This is merely a safety measure to prevent potential bricking the device.
 
 In fastboot mode, flash u-boot bootloader: `$ fastboot flash bootloader u-boot.bin`
 
@@ -287,7 +308,16 @@ End? [849MB]? 4931MB
 # mkdosfs /dev/block/mmcblk0p12
 ```
 
-TODO: Install rootfs
+Install rootfs onto the system partition:
+
+```
+## pwd=kc1-linux/
+$ adb shell mount /dev/block/mmcblk0p9 /system
+$ adb push rootfs.tar.gz /system
+$ adb shell
+# cd /system
+# tar -xzvf rootfs.tar.gz ./
+```
 
 TODO: Setup inittab
 
