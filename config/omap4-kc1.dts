@@ -157,6 +157,15 @@
 		reg = <0x48>;
 		status = "okay";
 	};
+
+	charger@6 {
+		compatible = "summit,smb347";
+		reg = <0x06>;
+		summit,usb-current-limit-microamp = <500000>;
+		summit,enable-usb-charging;
+		monitored-battery = <&bat>;
+		/* Documentation/devicetree/bindings/power/supply/summit,smb347-charger.yaml */
+	};
 };
 
 &mmc1 {
