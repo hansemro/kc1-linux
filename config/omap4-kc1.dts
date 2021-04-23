@@ -5,6 +5,7 @@
 /dts-v1/;
 
 #include "omap443x.dtsi"
+#include "omap4-kc1-wlan.dtsi"
 
 / {
 	model = "Amazon Kindle Fire (first generation)";
