@@ -20,28 +20,29 @@ Note that older kernels that were used for Android have more functional drivers 
 | ------------------ | ------- | -------- |
 | CPU                | &check; | TI OMAP4430 |
 | GPU                | &cross; | PowerVR SGX540 |
-| UART               | &check; | UART3 = `/dev/ttyO2` |
+| LPDDR2             | &check; | 512MB |
 | eMMC               | &check; | Issue: device assigns to `/dev/mmcblk0` or `/dev/mmcblk1` |
-| Green LED          | &check; | PWM led |
-| Orange LED         | &check; | PWM led |
-| Power Button       | &check; | TI TWL6030 |
-| USB OTG            | &check; | GPIO |
-| LCD Panel          | &cross; | 1024x600 32 bits/pixel |
-| LCD Backlight      | &cross; | PWM driven |
-| Framebuffer        | &cross; | omapfb |
-| Battery            | &check; | 3V3 4400mAh Li-Ion Battery |
+| UART               | &check; | UART3 = `/dev/ttyO2` |
+| DSS/Framebuffer    | &cross; | omapdss |
+| LCD Panel          | &cross; | [MIPI DPI] 1024x600 32 bits/pixel,  |
+| LCD Backlight      | &cross; | GPTimer10 PWM driven, [SPI] O2Micro IC (?) |
+| Touchscreen        | &cross; | [i2c] Ilitek 210x Touchscreen Controller |
 | PMIC               | &cross; | TI TWL6030 |
-| WLAN               | &cross; | TI WL127x |
-| Touchscreen        | &cross; | Ilitek 210x Touchscreen Controller |
-| Accelerometer      | &cross; | Bosch BMA250 |
-| Fuel Gauge         | &check; | TI BQ27541 |
-| Charger Controller | &cross; | Sumit SMB347 |
+| Green LED          | &check; | TWL6030 PWM led |
+| Orange LED         | &check; | TWL6030 PWM led |
+| Power Button       | &check; | TI TWL6030 |
+| RTC                | &check; | TI TWL6030 |
+| Battery            | &check; | 3V3 4400mAh Li-Ion Battery |
+| Fuel Gauge         | &check; | [i2c] TI BQ27541 |
+| Charger Controller | &cross; | [i2c] Sumit SMB347 |
+| USB OTG            | &check; | |
+| WLAN               | &cross; | [MMC/SDIO] TI WL127x |
+| Accelerometer      | &cross; | [i2c] Bosch BMA250 |
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | TI AIC3110 |
-| Temperature Sensor | &check; | National Semiconductor/TI LM75 ~ TI TMP105 |
-| Light Sensor       | &cross; | Sensortek STK22x7 |
-| LPDDR2             | &check; | emif? |
-| RTC                | &check; | TI TWL6030 |
+| Temperature Sensor | &check; | [i2c] National Semiconductor/TI LM75 ~ TI TMP105 |
+| Light Sensor       | &cross; | [i2c] Sensortek STK22x7 |
+| SmartReflex        | &cross; | ? |
 
 Setup
 =====
