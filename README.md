@@ -3,14 +3,12 @@ Mainline Linux on (First Generation) Kindle Fire
 
 Maintained by Hansem Ro (`hansemro@outlook.com`).
 
-Disclaimer: Your warranty is now void (if not already) and I am not responsible for any incurred damages. For assistance, reach out or submit an issue.
-
 This repo contains documentation for bringing up mainline Linux on First Generation Kindle Fire tablet (also known as Otter or KC1).
 
 Status
 ======
 
-Mainline kernel boots with at least a working UART console and usb ethernet (CDC) gadget. However, many things do not work yet (such as framebuffer and audio) with the current device tree.
+Mainline kernel boots with at least a working UART console and CDC/ACM gadget. However, many things do not work yet (such as framebuffer and audio) with the current device tree.
 
 Note that older kernels that were used for Android have more functional drivers (such as support for framebuffer and touchscreen).
 
@@ -39,7 +37,7 @@ Note that older kernels that were used for Android have more functional drivers 
 | WLAN               | &cross; | [MMC/SDIO] TI WL127x |
 | Accelerometer      | &cross; | [i2c] Bosch BMA250 |
 | Audio              | &cross; | TI TWL6040 |
-| Audio Codec        | &cross; | TI AIC3110 |
+| Audio Codec        | &cross; | [i2c] TI AIC3110 |
 | Temperature Sensor | &check; | [i2c] National Semiconductor/TI LM75 ~ TI TMP105 |
 | Light Sensor       | &cross; | [i2c] Sensortek STK22x7 |
 | SmartReflex        | &cross; | ? |
@@ -199,7 +197,7 @@ $ chmod +x rootfs/etc/init.d/rcS
 $ git clone https://git.busybox.net/busybox
 $ cp config/busybox.config busybox/.config
 $ cd buxybox
-$ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} -j${nproc}
+$ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} -j$(nproc)
 $ make ARCH=arm CROSS_COMPILE=${LIN65_ARM_LHF} install
 $ cd ../rootfs
 $ tar -czvf ../rootfs.tar.gz ./
@@ -258,13 +256,13 @@ The Kindle should now be in fastboot mode. Check `fastboot devices` to see if th
 
 ### 2. (Testing and) Installing U-Boot
 
-Good practice: Use `omap4boot/usbboot` utility to test bootloader images without flashing. This is merely a safety measure to prevent potential bricking the device.
+Good practice: Use `omap4boot/usbboot` utility to test bootloader images without flashing. This is merely a safety measure to prevent bricking your device.
 
 In fastboot mode, flash u-boot bootloader: `$ fastboot flash bootloader u-boot.bin`
 
 ### 3. Installing TWRP recovery (and backuping data)
 
-TWRP provides a useful set of linux tools for creating backups or installing images. However, we will be using TWRP frequently for transfering data between the build machine and the tablet.
+TWRP provides a useful set of tools for creating backups or installing images. However, we will be using TWRP frequently for transfering data between the build machine and the tablet.
 
 Download twrp for the Kindle Fire (Otter) [here](https://twrp.me/amazon/amazonkindlefire.html).
 
