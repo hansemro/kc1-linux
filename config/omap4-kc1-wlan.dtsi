@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
- * Copyright (C) 2021 Hansem Ro <hansemro@outlook.com>
+ * Maintained by Hansem Ro <hansemro@outlook.com>
  */
 
 / {
+	aliases {
+		mmc4 = &mmc5;
+	};
+
 	/* regulator for wl12xx on sdio5 */
 	wl12xx_vmmc: wl12xx_vmmc {
 		pinctrl-names = "default";
@@ -28,9 +32,10 @@
 		>;
 	};
 
-	/* wl12xx GPIO output for WLAN_EN */
+	/* wl12xx GPIO output for WLAN_EN and WLAN_IRQ */
 	wl12xx_gpio: pinmux_wl12xx_gpio {
 		pinctrl-single,pins = <
+			OMAP4_IOPAD(0x07a, PIN_INPUT | MUX_MODE3)		/* gpmc_ncs3.gpio_53 */
 			OMAP4_IOPAD(0x07c, PIN_OUTPUT | MUX_MODE3)		/* gpmc_nwp.gpio_54 */
 		>;
 	};
