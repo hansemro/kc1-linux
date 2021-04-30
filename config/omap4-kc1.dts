@@ -6,10 +6,20 @@
 
 #include "omap443x.dtsi"
 #include "omap4-kc1-wlan.dtsi"
+#include "omap4-kc1-bl.dtsi"
+#include "omap4-kc1-dss.dtsi"
 
 / {
 	model = "Amazon Kindle Fire (first generation)";
 	compatible = "amazon,omap4-kc1", "ti,omap4430", "ti,omap4";
+
+    aliases {
+        mmc0 = &mmc2;
+        mmc1 = &mmc1;
+        mmc2 = &mmc3;
+        mmc3 = &mmc4;
+        mmc4 = &mmc5;
+    };
 
 	memory@80000000 {
 		device_type = "memory";

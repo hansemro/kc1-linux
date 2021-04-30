@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * 04/29/2021:
+ * Hansem Ro 			: Backlight, PWM LED, PWM GPTimer, Battery, and pinmux configs, and all other crucial platform support
+ * Michael John Sakellaropoulos : Added LCD powereg, Added required DSS nodes and graph_port connections for LCD2 over DPI
+ */
+
+/ {
+	aliases {
+		display0 = &lcd2;
+	};
+
+	lcd2: display  {
+        pinctrl-names = "default";
+        pinctrl-0 = <&lcd_pins>;
+		compatible = "panel-dpi";
+		status = "okay";
+		label = "lcd2";
+		power-supply = <&lcd2_power>;
+		backlight = <&bl>;
+
+		panel-timing {
+			/* 1024x600p */
+			/* From uboot */
+			clock-frequency = <51200000>;
+			hactive = <1024>; //x_res
+			vactive = <600>; //y_res
+			hsync-len = <10>; //hsw
+			hfront-porch = <160>; //hfp
+			hback-porch = <150>; //hbp
+			vfront-porch = <12>; //vfp
+			vback-porch = <20>; //vbp
+			vsync-len = <3>; //vsw
+		};
+
+		ports {
+			port@0 {
+				panel_dpi_in: endpoint {
+					remote-endpoint = <&dpi_out_0>;
+				};
+			};
+		};
+	};
+};
+
+&omap4_pmx_core {
+	dss_dpi_pins: pinmux_dss_dpi_pins {
+		pinctrl-single,pins = <
+			OMAP4_IOPAD(0x162, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data23 */
+			OMAP4_IOPAD(0x164, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data22 */
+			OMAP4_IOPAD(0x166, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data21 */
+			OMAP4_IOPAD(0x168, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data20 */
+			OMAP4_IOPAD(0x16a, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data19 */
+			OMAP4_IOPAD(0x16c, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data18 */
+			OMAP4_IOPAD(0x16e, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data15 */
+			OMAP4_IOPAD(0x170, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data14 */
+			OMAP4_IOPAD(0x172, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data13 */
+			OMAP4_IOPAD(0x174, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data12 */
+			OMAP4_IOPAD(0x176, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data11 */
+
+			OMAP4_IOPAD(0x1b4, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data10 */
+			OMAP4_IOPAD(0x1b6, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data9 */
+			OMAP4_IOPAD(0x1b8, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data16 */
+			OMAP4_IOPAD(0x1ba, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data17 */
+			OMAP4_IOPAD(0x1bc, PIN_OUTPUT | MUX_MODE5)	/* dispc2_hsync */
+			OMAP4_IOPAD(0x1be, PIN_OUTPUT | MUX_MODE5)	/* dispc2_pclk */
+			OMAP4_IOPAD(0x1c0, PIN_OUTPUT | MUX_MODE5)	/* dispc2_vsync */
+			OMAP4_IOPAD(0x1c2, PIN_OUTPUT | MUX_MODE5)	/* dispc2_de */
+			OMAP4_IOPAD(0x1c4, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data8 */
+			OMAP4_IOPAD(0x1c6, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data7 */
+			OMAP4_IOPAD(0x1c8, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data6 */
+			OMAP4_IOPAD(0x1ca, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data5 */
+			OMAP4_IOPAD(0x1cc, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data4 */
+			OMAP4_IOPAD(0x1ce, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data3 */
+
+			OMAP4_IOPAD(0x1d0, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data2 */
+			OMAP4_IOPAD(0x1d2, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data1 */
+			OMAP4_IOPAD(0x1d4, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data0 */
+		>;
+	};
+
+	lcd_pins: pinmux_lcd_pins {
+		pinctrl-single,pins = <
+			OMAP4_IOPAD(0x06a, PIN_OUTPUT | MUX_MODE3) /* gpio_45 LCD_PWR_ON */
+		>;
+	};
+};
+
+&dss {
+	pinctrl-names = "default";
+	pinctrl-0 = <&dss_dpi_pins>;
+	status = "okay";
+
+	/*vdda_video-supply = <&vcxio>;*/
+
+	port {
+		/*reg = <0>;*/
+
+		dpi_out_0: endpoint {
+			remote-endpoint = <&panel_dpi_in>;
+			data-lines = <24>;
+		};
+	};
+};
+
+&dsi1 {
+	status = "disabled";
+	vdd-supply = <&vcxio>;
+};
+
+&dsi2 {
+	status = "disabled";
+	vdd-supply = <&vcxio>;
+};

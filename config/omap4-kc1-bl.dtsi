@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: GPL-2.0-only
+
+/ {
+    lcd2_power: lcd2_power_reg {
+        compatible = "regulator-fixed";
+        regulator-name = "lcd2_power";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+        enable-active-high;
+    };
+
+	bl: backlight {
+		compatible = "pwm-backlight";
+		brightness-levels = <0 4 8 16 32 64 128 255>;
+		num-interpolated-steps = <256>;
+		default-brightness-level = <5>;
+		enable-gpio = <
+			&gpio2 13 GPIO_ACTIVE_HIGH /* gpio_45 LCD_EN */
+			>;
+		power-supply = <&lcd2_power>;
+		pwms = <&pwm10 0 75000 0>; /* 75 KHz */
+	};
+
+	pwm10: dmtimer-pwm@10 {
+		pinctrl-names = "default";
+		pinctrl-0 = <&timer10_pins>;
+		gpio = <&gpio2 30 GPIO_ACTIVE_HIGH>; /* gpio_94 */
+		compatible = "ti,omap-dmtimer-pwm";
+		ti,timers = <&timer10>;
+		ti,prescaler = <0>; /* prescale = 1 */
+		ti,clock-source = <1>; /* 32 KHz source */
+		#pwm-cells = <3>;
+	};
+};
+
+&omap4_pmx_core {
+	timer10_pins: pinmux_timer10_pins {
+		pinctrl-single,pins = <
+			OMAP4_IOPAD(0x0d6, PIN_OUTPUT | MUX_MODE1) /* dmtimer10_pwm_evt.gpio_94*/
+		>;
+	};
+};
