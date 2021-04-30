@@ -33,6 +33,7 @@
 			label = "green";
 			pwms = <&twl_pwm 0 7812500>;
 			max-brightness = <127>;
+			linux,default-trigger = "heartbeat";
 		};
 
 		led-2 {
