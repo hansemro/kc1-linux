@@ -27,7 +27,7 @@ BUILD_TIME=`date +"%Y-%m-%d-%H-%M"`
 #   flash_prev  : just flash previously-built image with fastboot
 #
 
-CMDLINE="root=/dev/mmcblk0p9"
+CMDLINE="rootwait rw root=/dev/mmcblk0p9"
 
 # build_boot_img: Build Android boot image with the following:
 #                   - kernel (linux/arch/arm/boot/zImage)
