@@ -13,13 +13,13 @@
 	model = "Amazon Kindle Fire (first generation)";
 	compatible = "amazon,omap4-kc1", "ti,omap4430", "ti,omap4";
 
-    aliases {
-        mmc0 = &mmc2;
-        mmc1 = &mmc1;
-        mmc2 = &mmc3;
-        mmc3 = &mmc4;
-        mmc4 = &mmc5;
-    };
+	aliases {
+		mmc0 = &mmc2;
+		mmc1 = &mmc1;
+		mmc2 = &mmc3;
+		mmc3 = &mmc4;
+		mmc4 = &mmc5;
+	};
 
 	memory@80000000 {
 		device_type = "memory";
@@ -151,13 +151,15 @@
 	clock-frequency = <400000>;
 
 	touchscreen@41 {
-		compatible = "ilitek,ilitek210x";
+		compatible = "ilitek,ili210x";
 		reg = <0x41>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <3 IRQ_TYPE_EDGE_FALLING /* gpio_35 TOUCH_IRQ_1 */
 			4 IRQ_TYPE_EDGE_FALLING /* gpio_36 TOUCH_IRQ_2 */
 			>;
-		reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW>; /* gpio_18; configuration uncertain */
+		reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW
+				&gpio3 8 GPIO_ACTIVE_LOW
+				>;
 	};
 };
 
@@ -225,4 +227,10 @@
 
 &twl_usb_comparator {
 	usb-supply = <&vusb>;
+};
+
+&vaux3 {
+	regulator-min-microvolt = <3000000>;
+	regulator-max-microvolt = <3000000>;
+	regulator-always-on;
 };
