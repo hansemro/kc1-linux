@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-only
 /*
  * 04/29/2021:
- * Hansem Ro 			: Backlight, PWM LED, PWM GPTimer, Battery, and pinmux configs, and all other crucial platform support
+ * Hansem Ro                    : Backlight, PWM LED, PWM GPTimer, Battery, and pinmux configs, and all other crucial platform support
  * Michael John Sakellaropoulos : Added LCD powereg, Added required DSS nodes and graph_port connections for LCD2 over DPI
  */
 
@@ -10,9 +10,9 @@
 		display0 = &lcd2;
 	};
 
-	lcd2: display  {
-        pinctrl-names = "default";
-        pinctrl-0 = <&lcd_pins>;
+	lcd2: display {
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcd_pins>;
 		compatible = "panel-dpi";
 		status = "okay";
 		label = "lcd2";
@@ -91,7 +91,7 @@
 	pinctrl-0 = <&dss_dpi_pins>;
 	status = "okay";
 
-	/*vdda_video-supply = <&vcxio>;*/
+	vdda_video-supply = <&vcxio>;
 
 	port {
 		/*reg = <0>;*/
@@ -104,11 +104,11 @@
 };
 
 &dsi1 {
-	status = "disabled";
+	status = "okay";
 	vdd-supply = <&vcxio>;
 };
 
 &dsi2 {
-	status = "disabled";
+	status = "okay";
 	vdd-supply = <&vcxio>;
 };
