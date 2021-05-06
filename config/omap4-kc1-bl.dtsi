@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Hansem Ro <hansemro@outlook.com>
+ */
 
 / {
-    lcd2_power: lcd2_power_reg {
-        compatible = "regulator-fixed";
-        regulator-name = "lcd2_power";
-        regulator-min-microvolt = <3300000>;
-        regulator-max-microvolt = <3300000>;
-        enable-active-high;
-    };
+	lcd2_power: lcd2_power_reg {
+		compatible = "regulator-fixed";
+		regulator-name = "lcd2_power";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		enable-active-high;
+	};
 
 	bl: backlight {
 		compatible = "pwm-backlight";
