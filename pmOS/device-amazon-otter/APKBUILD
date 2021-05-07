@@ -1,0 +1,29 @@
+# Reference: <https://postmarketos.org/devicepkg>
+pkgname=device-amazon-otter
+pkgdesc="Amazon Kindle Fire"
+pkgver=0.2
+pkgrel=0
+url="https://postmarketos.org"
+license="MIT"
+arch="armv7"
+options="!check !archcheck"
+depends="
+	linux-amazon-otter
+	mesa-dri-gallium
+	mkbootimg
+	postmarketos-base
+"
+makedepends="devicepkg-dev"
+source="deviceinfo"
+
+build() {
+	devicepkg_build $startdir $pkgname
+}
+
+package() {
+	devicepkg_package $startdir $pkgname
+}
+
+sha512sums="
+b1c73ee9848c5cf9b90507498522c63f6052427b7b1731b8e0c9a9ee36ab4d3fcebb7ec2f0b2166695a82c73b6ac1c73f6a13cd0e9fd51a988cd4f8d4589a7f1  deviceinfo
+"
