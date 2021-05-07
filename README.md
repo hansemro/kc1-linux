@@ -368,7 +368,7 @@ Install with scripts:
 ## While in recovery, mount system partition
 $ adb shell mount /dev/block/mmcblk0p9 /system
 ## Push kernel modules to system partition
-$ ./push_modules.sh
+$ ./push_modules.sh adb
 ## Install kernel+dtb as Android boot image
 ##
 ## build_boot.sh usage:
