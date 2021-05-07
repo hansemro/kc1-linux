@@ -12,9 +12,9 @@ url="https://kernel.org"
 license="GPL-2.0-only"
 options="!strip !check !tracedeps pmb:cross-native"
 makedepends="
-    mpfr-dev
-    mpc1-dev
-    gmp-dev
+	mpfr-dev
+	mpc1-dev
+	gmp-dev
 	bash
 	bc
 	bison
@@ -31,11 +31,11 @@ _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/torvalds/$_repository/archive/$_commit.tar.gz
 	$_config
-    0001-Update-device-tree-for-omap4-kc1.patch
-    0002-Input-ili210x-Fix-ili210x-touchdata-coordinates-endianness.patch
-    0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
-    0004-Report-MAX_X-and-MAX_Y-on-ili210x-input-device.patch
-    0005-HACK-ili210x-Reduce-poll-period-to-1.patch
+	0001-Update-device-tree-for-omap4-kc1.patch
+	0002-Input-ili210x-Fix-ili210x-touchdata-coordinates-endianness.patch
+	0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
+	0004-Report-MAX_X-and-MAX_Y-on-ili210x-input-device.patch
+	0005-HACK-ili210x-Reduce-poll-period-to-1.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 _outdir="out"
