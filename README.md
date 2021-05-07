@@ -8,39 +8,37 @@ This repo contains documentation for bringing up mainline Linux on First Generat
 Status
 ======
 
-Mainline kernel boots with at least a working UART console and CDC/ACM gadget. However, many things do not work yet (such as framebuffer and audio) with the current device tree.
-
-Note that older kernels that were used for Android have more functional drivers (such as support for framebuffer and touchscreen).
+With some patches to mainline kernel, the device can boot into userspace with several devices working. Testing has been done on v5.12 kernel with a personally-built postmarketOS rootfs.
 
 ### Device Tree Status Table
 
 | Hardware           | Status  | Comments |
 | ------------------ | ------- | -------- |
-| CPU                | &check; | TI OMAP4430 |
+| CPU                | Works   | TI OMAP4430 |
 | GPU                | &cross; | PowerVR SGX540 |
-| LPDDR2             | &check; | 512MB |
-| eMMC               | &check; | Issue: device assigns to `/dev/mmcblk0` or `/dev/mmcblk1` |
-| UART               | &check; | UART3 = `/dev/ttyO2` |
-| DSS/Framebuffer    | &cross; | omapdss |
-| LCD Panel          | &cross; | [MIPI DPI] 1024x600 32 bits/pixel,  |
-| LCD Backlight      | &cross; | GPTimer10 PWM driven, [SPI] O2Micro IC (?) |
-| Touchscreen        | &cross; | [i2c] Ilitek 210x Touchscreen Controller |
-| PMIC               | &cross; | TI TWL6030 |
-| Green LED          | &check; | TWL6030 PWM led |
-| Orange LED         | &check; | TWL6030 PWM led |
-| Power Button       | &check; | TI TWL6030 |
-| RTC                | &check; | TI TWL6030 |
-| Battery            | &check; | 3V3 4400mAh Li-Ion Battery |
-| Fuel Gauge         | &check; | [i2c] TI BQ27541 |
-| Charger Controller | &cross; | [i2c] Sumit SMB347 |
-| USB OTG            | &check; | |
-| WLAN               | &cross; | [MMC/SDIO] TI WL127x |
+| LPDDR2             | Works   | 512MB |
+| eMMC               | Works   | 8GB; currently mapped to '/dev/mmcblk0' |
+| UART               | Works   | UART3 = `/dev/ttyO2` |
+| DSS/Framebuffer    | Works   | omapdrm successfully registers framebuffer |
+| LCD Panel          | Works   | [MIPI DPI] 1024x600 32 bits/pixel |
+| LCD Backlight      | Partial | GPTimer10 PWM driven; simple on/off support only |
+| Touchscreen        | Works   | [i2c] Ilitek 2107; requires additional kernel patches |
+| PMIC               | Partial | TI TWL6030 |
+| Green LED          | Works   | TWL6030 PWM led |
+| Orange LED         | Works   | TWL6030 PWM led |
+| Power Button       | Works   | TI TWL6030 |
+| RTC                | Works   | TI TWL6030 |
+| Battery            | Works   | 3V3 4400mAh Li-Ion Battery |
+| Fuel Gauge         | Works   | [i2c] TI BQ27541 |
+| Charger Controller | Works   | [i2c] Sumit SMB347 |
+| USB Gadget/OTG     | Works   | CDC/ACM gadget works; OTG works |
+| WLAN               | &cross; | [MMC/SDIO] TI WL127x; driver does not load |
 | Accelerometer      | &cross; | [i2c] Bosch BMA250 |
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | [i2c] TI AIC3110 |
-| Temperature Sensor | &check; | [i2c] National Semiconductor/TI LM75 ~ TI TMP105 |
+| Temperature Sensor | Works   | [i2c] National Semiconductor/TI LM75 ~ TI TMP105 |
 | Light Sensor       | &cross; | [i2c] Sensortek STK22x7 |
-| SmartReflex        | &cross; | ? |
+| SmartReflex        | &cross; | dmesg reports errors |
 
 Setup
 =====
@@ -58,6 +56,7 @@ This project requires the following:
 - Android Platform Tools (adb, fastboot)
 - TODO (Please refer to build requirements for kernel and u-boot for your distro)
 - TODO udev rule for Kindle Fire
+- 'picocom' or a similar UART communication program
 
 ### Setting up and connecting to UART port
 
@@ -171,9 +170,15 @@ You may encounter errors while building the kernel. Fortunately, many of which h
 $ git clone https://github.com/torvalds/linux.git mainline
 $ cp scripts/make-linux.sh mainline/make.sh
 $ cp config/omap4_kc1.config mainline/.config
-$ cp config/omap4-kc1.dts mainline/arch/arm/boot/dts/
+$ cp patches/*.patch mainline/
 $ cd mainline
-$ git checkout f40ddce88593482919761f74910f42f4b84c004b
+$ git checkout v5.12
+## Apply 0001 patch if you are using upstream's devicetree (not from this repo)
+$ patch -p1 < 0001*.patch
+$ patch -p1 < 0002*.patch
+$ patch -p1 < 0003*.patch
+$ patch -p1 < 0004*.patch
+$ patch -p1 < 0005*.patch
 ## make.sh usage:
 ##    ./make.sh          : build kernel (arch/arm/boot/zImage)
 ##                         + modules (arch/arm/boot/lib/modules/)
