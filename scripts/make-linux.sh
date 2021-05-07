@@ -61,7 +61,7 @@ else
     SECONDS=0
     $MK clean
     rm -rf arch/arm/boot/lib
-    $MK CONFIG_DEBUG_SECTION_MISMATCH=y -j4
+    $MK CONFIG_DEBUG_SECTION_MISMATCH=y -j$(nproc)
     $MK INSTALL_MOD_PATH=arch/arm/boot modules_install
     echo "$(show_time $SECONDS) seconds wasted"
     # usr/gen_init_cpio descriptor | gzip > initramfs.gz
