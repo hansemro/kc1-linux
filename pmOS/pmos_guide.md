@@ -24,13 +24,25 @@ cp -r pmOS/device-amazon-otter ~/pmaports/device/testing/
 cp -r pmOS/linux-amazon-otter ~/pmaports/device/testing/
 ```
 
+Copy patches:
+
+```
+## pwd=kc1-linux
+cp -r patches/* ~/pmaports/device/testing/linux-amazon-otter/
+```
+
 ## TODO Build
 
 ## TODO Install
 
 ## TODO Post-Install Setup
 
-### Recommended packages:
+### Recommended packages
 
 - `postmarketos-ui-xfce4`: xfce4 desktop environment
 - `xvkbd`: X11 onscreen keyboard
+
+
+## Resources
+
+- https://wiki.postmarketos.org/wiki/Installing_pmbootstrap
