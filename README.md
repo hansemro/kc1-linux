@@ -446,6 +446,7 @@ $ ./usbboot ./aboot.bin <twrp.img|u-boot.bin>
 Credits
 =======
 
+- Michael John Sakellaropoulos (brought up panel + drm support among other helpful work)
 - Paul Kocialkowski (initial work on device tree for Kindle Fire)
 - Andrew Litt (modified omap4boot/usbboot for Kindle Fire)
 - Hashcode (U-Boot work for Kindle Fire)
