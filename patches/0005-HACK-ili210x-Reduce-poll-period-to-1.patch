@@ -1,0 +1,30 @@
+From 80617bb10ab59138ff831d38f6cdd27599fb57e1 Mon Sep 17 00:00:00 2001
+From: Hansem Ro <hansemro@outlook.com>
+Date: Thu, 6 May 2021 23:44:32 -0700
+Subject: [PATCH] [HACK] ili210x: Reduce poll period to 1
+
+20ms poll period is too long for Kindle Fire. As a hack, this reduces
+the polling period to 1 ms.
+
+Note: Setting to 0 ms seems to work somewhat better, but it could be
+placebo.
+---
+ drivers/input/touchscreen/ili210x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/input/touchscreen/ili210x.c b/drivers/input/touchscreen/ili210x.c
+index d8fccf048bf4..04ec18d09344 100644
+--- a/drivers/input/touchscreen/ili210x.c
++++ b/drivers/input/touchscreen/ili210x.c
+@@ -12,7 +12,7 @@
+ #include <linux/slab.h>
+ #include <asm/unaligned.h>
+ 
+-#define ILI2XXX_POLL_PERIOD	20
++#define ILI2XXX_POLL_PERIOD	1
+ 
+ #define ILI210X_DATA_SIZE	64
+ #define ILI211X_DATA_SIZE	43
+-- 
+2.31.1
+
