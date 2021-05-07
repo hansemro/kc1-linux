@@ -56,7 +56,7 @@ This project requires the following:
 - Android Platform Tools (adb, fastboot)
 - TODO (Please refer to build requirements for kernel and u-boot for your distro)
 - TODO udev rule for Kindle Fire
-- 'picocom' or a similar UART communication program
+- `picocom` or a similar UART communication program
 
 ### Setting up and connecting to UART port
 
