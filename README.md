@@ -17,7 +17,7 @@ With some patches to mainline kernel, the device can boot into userspace with se
 | CPU                | Works   | TI OMAP4430 |
 | GPU                | &cross; | PowerVR SGX540 |
 | LPDDR2             | Works   | 512MB |
-| eMMC               | Works   | 8GB; currently mapped to '/dev/mmcblk0' |
+| eMMC               | Works   | 8GB; currently mapped to `/dev/mmcblk0` |
 | UART               | Works   | UART3 = `/dev/ttyO2` |
 | DSS/Framebuffer    | Works   | omapdrm successfully registers framebuffer |
 | LCD Panel          | Works   | [MIPI DPI] 1024x600 32 bits/pixel |
@@ -174,10 +174,10 @@ $ cp patches/*.patch mainline/
 $ cd mainline
 $ git checkout v5.12
 ## Apply 0001 patch if you are using upstream's devicetree (not from this repo)
+## Patch 0004 is no longer needed, but it doesn't hurt to have it applied either.
 $ patch -p1 < 0001*.patch
 $ patch -p1 < 0002*.patch
 $ patch -p1 < 0003*.patch
-$ patch -p1 < 0004*.patch
 $ patch -p1 < 0005*.patch
 ## make.sh usage:
 ##    ./make.sh          : build kernel (arch/arm/boot/zImage)
