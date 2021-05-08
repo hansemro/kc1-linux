@@ -160,6 +160,8 @@
 		reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW
 				&gpio3 8 GPIO_ACTIVE_LOW
 				>;
+		touchscreen-size-x = <3968>;
+		touchscreen-size-y = <2304>;
 	};
 };
 
