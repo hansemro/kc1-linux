@@ -32,7 +32,7 @@ With some patches to mainline kernel, the device can boot into userspace with se
 | Fuel Gauge         | Works   | [i2c] TI BQ27541 |
 | Charger Controller | Works   | [i2c] Sumit SMB347 |
 | USB Gadget/OTG     | Works   | CDC/ACM gadget works; OTG works |
-| WLAN               | &cross; | [MMC/SDIO] TI WL127x; driver does not load |
+| WLAN               | Works   | [MMC/SDIO] TI WL1271 |
 | Accelerometer      | &cross; | [i2c] Bosch BMA250 |
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | [i2c] TI AIC3110 |
