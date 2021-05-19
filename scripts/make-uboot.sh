@@ -42,6 +42,8 @@ function show_time () {
 
 if [ "$1" == "clean" ]; then
     $MK distclean
+elif [ "$1" != "" ]; then
+    $MK $1
 else
     SECONDS=0
     $MK distclean
