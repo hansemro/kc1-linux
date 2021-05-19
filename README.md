@@ -71,9 +71,40 @@ Start by cloning this repo which contains configuration files and some helper sc
 $ git clone https://github.com/hansemro/kc1-linux
 ```
 
+### Recommended udev rules:
+
+Add to `/etc/udev/rules.d/50-kc1.rules`:
+```
+SUBSYSTEM=="usb", ATTR{idVendor}=="1949", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0004",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0004",SYMLINK+="android_fastboot"
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="1949", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0007",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0007",SYMLINK+="android_fastboot"
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="0100",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="0100",SYMLINK+="android_fastboot"
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="d001",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="d001",SYMLINK+="android_fastboot"
+
+SUBSYSTEM=="usb", ATTR{idVendor}=="0451", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="0451",ATTR{idProduct}=="d00f",SYMLINK+="android_adb"
+SUBSYSTEM=="usb",ATTR{idVendor}=="0451",ATTR{idProduct}=="d00f",SYMLINK+="android_fastboot"
+```
+
+Reload udev rules:
+```
+$ sudo udevadm control --reload-rules
+$ sudo udevadm trigger
+```
+
 ### Toolchain
 
-You can decide whether to use a prebuilt toolchain or compile your own with `crosstool-ng`. If you are unsure, just use a prebuilt toolchain from Linaro or Bootlin.
+You can decide whether to use a prebuilt toolchain or compile your own with `crosstool-ng`. If you are unsure, just use a prebuilt toolchain from official GCC, Linaro, or Bootlin. Do note that most toolchain vendors provide two toolchain variants: one for baremetal (usually labeled as none) and another for Linux.
 
 #### Prebuilt Toolchain
 
@@ -129,13 +160,23 @@ $ ct-ng nconfig
 $ ct-ng build.$(nproc)
 ```
 
-### omap4boot
+### aboot.bin + omapboot
+
+`omapboot` works more reliably than omap4boot, but we will still want to compile `aboot.bin` from omap4boot repo.
 
 ```
 ## pwd=kc1-linux/
 $ git clone https://github.com/al177/omap4boot.git
+$ git clone https://github.com/kousu/omapboot.git
 $ cd omap4boot
 $ make TOOLCHAIN=${LIN49_ARM_EABI}
+## Copy aboot.bin somewhere convenient
+$ cp out/panda/aboot.bin ~/
+$ cd ../omapboot
+$ pip3 install pyusb
+## install omapboot to ~/.local/bin:
+$ python setup.py develop --user
+$ export PATH=$PATH:~/.local/bin
 ```
 
 ### U-Boot (based off Hashcode fork)
@@ -179,6 +220,7 @@ $ patch -p1 < 0001*.patch
 $ patch -p1 < 0002*.patch
 $ patch -p1 < 0003*.patch
 $ patch -p1 < 0005*.patch
+$ cp config/omap4-kc1*dtb* mainline/arch/arm/boot/dts
 ## make.sh usage:
 ##    ./make.sh          : build kernel (arch/arm/boot/zImage)
 ##                         + modules (arch/arm/boot/lib/modules/)
@@ -217,7 +259,7 @@ Skip steps 1 and 3 if you already have TWRP with working adb installed.
 
 ### 1. (Rooting the Kindle Fire) and setting the device to fastboot mode
 
-"Rooting" is only required if the Kindle Fire is on newer stock firmware (FireOS > 6.3.0) and the device cannot get access to fastboot mode by another method.
+"Rooting" is only required if the Kindle Fire is on newer stock firmware (FireOS > 6.3.0) and the device cannot get access to fastboot mode by some other method (fastboot cable, custom bootloader, etc).
 
 ```
 ## Get saferoot.zip
@@ -234,7 +276,7 @@ $ unzip ../saferoot.zip
 $ ./install.sh
 ```
 
-To check if you have root, run the following:
+With adb, access the root shell to check if the device is rooted:
 
 ```
 ## from a computer
@@ -261,7 +303,7 @@ The Kindle should now be in fastboot mode. Check `fastboot devices` to see if th
 
 ### 2. (Testing and) Installing U-Boot
 
-Good practice: Use `omap4boot/usbboot` utility to test bootloader images without flashing. This is merely a safety measure to prevent bricking your device.
+Good practice: Use `omapboot/omap4boot/usbboot` utility to test bootloader images without flashing. This is merely a safety measure to prevent bricking your device.
 
 In fastboot mode, flash u-boot bootloader: `$ fastboot flash bootloader u-boot.bin`
 
@@ -435,13 +477,33 @@ Note: It is possible to load the kernel and device tree blob over serial, but it
 Brick Recovery
 ==============
 
-TODO: Create recovery guide based off usbboot mechanism.
+OMAP44xx SoC has a built-in usbboot mode that allows the device to boot into u-boot or a recovery image in whatever state the device is in.
 
+usbboot mode can be triggered by any of the following methods:
+- via pin shorting: described in this old [XDA post](https://forum.xda-developers.com/t/devs-needed-for-twrp-port.1356425/page-3#post-19762674)
+- via UI option in Hashcode 2014 U-Boot port: navigate to the advanced menu option via power button
+- via u-boot console command in Hashcode 2014 U-Boot port: run `kc1_usbboot`
+- via fastboot: `fastboot oem idme bootmode 4003; fastboot reboot`
+- via adb (recovery): `adb shell idme bootmode 4003; adb shell busybox reboot`
+
+In the circumstance that the device cannot boot into a bootloader, the pin shorting method is the only method that can be used, which guarantees recovery from most types of bricks.
+
+`omap4boot` Usage:
 ```
-$ cd kc1-linux/omap4boot/out/panda/
+## pwd=kc1-linux
+$ cd omap4boot/out/panda/
 ## Boot into TWRP recovery (for adb) or u-boot (for fastboot)
-$ ./usbboot ./aboot.bin <twrp.img|u-boot.bin>
+## Note: use omapboot if encountering repeated errors.
+$ ./usbboot ./aboot.bin <twrp.img|u-boot.bin|kernel|2nd-stage>
 ```
+
+(Recommended) `omapboot` Usage:
+```
+## Note: ignore messages about removing the battery.
+$ omapboot ~/aboot.bin <twrp.img|u-boot.bin|kernel|2nd-stage>
+```
+
+The rest of the steps vary depending on what needs to be recovered.
 
 Credits
 =======
