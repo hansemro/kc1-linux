@@ -178,6 +178,13 @@
 
 	clock-frequency = <400000>;
 
+	accelerometer@18 {
+		compatible = "bosch,bma250";
+		reg = <0x18>;
+		vdd-supply = <&vaux2>;
+		vddio-supply = <&vaux2>;
+	};
+
 	tmp@48 {
 		compatible = "ti,tmp105";
 		reg = <0x48>;
