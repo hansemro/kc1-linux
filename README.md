@@ -220,7 +220,7 @@ $ patch -p1 < 0001*.patch
 $ patch -p1 < 0002*.patch
 $ patch -p1 < 0003*.patch
 $ patch -p1 < 0005*.patch
-$ cp config/omap4-kc1*dtb* mainline/arch/arm/boot/dts
+$ cp config/omap4-kc1*dts* mainline/arch/arm/boot/dts
 ## make.sh usage:
 ##    ./make.sh          : build kernel (arch/arm/boot/zImage)
 ##                         + modules (arch/arm/boot/lib/modules/)
@@ -486,7 +486,7 @@ usbboot mode can be triggered by any of the following methods:
 - via fastboot: `fastboot oem idme bootmode 4003; fastboot reboot`
 - via adb (recovery): `adb shell idme bootmode 4003; adb shell busybox reboot`
 
-In the circumstance that the device cannot boot into a bootloader, the pin shorting method is the only method that can be used, which guarantees recovery from most types of bricks.
+In the circumstance that the device cannot boot into a bootloader, the pin shorting method is the only method that can be used.
 
 `omap4boot` Usage:
 ```
