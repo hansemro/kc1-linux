@@ -14,7 +14,8 @@ With some patches to mainline kernel, the device can boot into userspace with se
 
 | Hardware           | Status  | Comments |
 | ------------------ | ------- | -------- |
-| CPU                | Works   | TI OMAP4430 |
+| CPU                | Works   | TI OMAP4430 GP |
+| Remote Processor   | &cross; | Ducati Sub System; Dual Core Cortex-M3; DSP; IPU |
 | GPU                | &cross; | PowerVR SGX540 |
 | LPDDR2             | Works   | 512MB |
 | eMMC               | Works   | 8GB; currently mapped to `/dev/mmcblk0` |
@@ -33,7 +34,7 @@ With some patches to mainline kernel, the device can boot into userspace with se
 | Charger Controller | Works   | [i2c] Sumit SMB347 |
 | USB Gadget/OTG     | Works   | CDC/ACM gadget works; OTG works |
 | WLAN               | Works   | [MMC/SDIO] TI WL1271 |
-| Accelerometer      | &cross; | [i2c] Bosch BMA250 |
+| Accelerometer      | Works   | [i2c] Bosch BMA250 |
 | Audio              | &cross; | TI TWL6040 |
 | Audio Codec        | &cross; | [i2c] TI AIC3110 |
 | Temperature Sensor | Works   | [i2c] National Semiconductor/TI LM75 ~ TI TMP105 |
@@ -54,24 +55,11 @@ This project requires the following:
 ### Software Requirements
 
 - Android Platform Tools (adb, fastboot)
-- TODO (Please refer to build requirements for kernel and u-boot for your distro)
-- TODO udev rule for Kindle Fire
 - `picocom` or a similar UART communication program
+- TODO (Please refer to build requirements for kernel and u-boot for your distro)
+- udev rules for Kindle Fire
 
-### Setting up and connecting to UART port
-
-TODO: Add hardware guide based off information found [here](https://web.archive.org/web/20141225213214/http://forum.xda-developers.com/showthread.php?t=1471813).
-
-Build Guide
-===========
-
-Start by cloning this repo which contains configuration files and some helper scripts used in the steps below:
-
-```
-$ git clone https://github.com/hansemro/kc1-linux
-```
-
-### Recommended udev rules:
+#### Recommended udev rules
 
 Add to `/etc/udev/rules.d/50-kc1.rules`:
 ```
@@ -100,6 +88,19 @@ Reload udev rules:
 ```
 $ sudo udevadm control --reload-rules
 $ sudo udevadm trigger
+```
+
+### Setting up and connecting to UART port
+
+TODO: Add hardware guide based off information found [here](https://web.archive.org/web/20141225213214/http://forum.xda-developers.com/showthread.php?t=1471813).
+
+Build Guide
+===========
+
+Start by cloning this repo which contains configuration files and some helper scripts used in the steps below:
+
+```
+$ git clone https://github.com/hansemro/kc1-linux
 ```
 
 ### Toolchain
