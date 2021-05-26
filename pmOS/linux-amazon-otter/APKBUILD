@@ -34,31 +34,44 @@ source="
 	0001-Update-device-tree-for-omap4-kc1.patch
 	0002-Input-ili210x-Fix-ili210x-touchdata-coordinates-endianness.patch
 	0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
-	0004-Report-MAX_X-and-MAX_Y-on-ili210x-input-device.patch
 	0005-HACK-ili210x-Reduce-poll-period-to-1.patch
+	0006-Add-clk32kg-to-twl6030.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 _outdir="out"
 
 prepare() {
 	default_prepare
-	REPLACE_GCCH=0 . downstreamkernel_prepare
+	cp -v $srcdir/$_config .config
 }
 
 build() {
 	unset LDFLAGS
-	make O="$_outdir" ARCH="$_carch" CC="${CC:-gcc}" \
+	make ARCH="$_carch" CC="${CC:-gcc}" \
 		KBUILD_BUILD_VERSION="$((pkgrel + 1 ))-postmarketOS"
 }
 
 package() {
-	downstreamkernel_package "$builddir" "$pkgdir" "$_carch" "$_flavor" "$_outdir"
+	mkdir -p "$pkgdir"/boot
+	make zinstall modules_install dtbs_install \
+		ARCH="$_carch" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$pkgdir"/boot \
+		INSTALL_MOD_PATH="$pkgdir" \
+		INSTALL_DTBS_PATH="$pkgdir/usr/share/dtb"
+
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir/usr/share/kernel/$_flavor/kernel.release"
+	install -D "$builddir"/include/config/kernel.release \
+		"$pkgdir/usr/share/kernel/$pkgver/kernel.release"
 }
 
-sha512sums="70aaff2a14cb7d7d0b5d697e80e8452c8e275473dc73fe6c80bebf586de26a9129a6bae8042438b40a577e0803acf9271f9f67d61e76fd09b8714d4d86684431  linux-amazon-otter-9f4ad9e425a1d3b6a34617b8ea226d56a119a717.tar.gz
-7839ed3340a2aaa16423d94fec349d8a5f49c9f0edbd80db4971498386aca5eb3bb208d663c5c411164a0a369c386a75ce4461d123e88e8f84d071b86f002995  config-amazon-otter.armv7
-b723f5ccfc01794c09d3b96db24c8014a8e403a86e3467aa6fad4abf2ce3503c543ebaa30bcd6e81ad8ae0dd9a3b8b90006901dbdcdb6fc0036ffd5c1789707f  0001-Update-device-tree-for-omap4-kc1.patch
+sha512sums="
+70aaff2a14cb7d7d0b5d697e80e8452c8e275473dc73fe6c80bebf586de26a9129a6bae8042438b40a577e0803acf9271f9f67d61e76fd09b8714d4d86684431  linux-amazon-otter-9f4ad9e425a1d3b6a34617b8ea226d56a119a717.tar.gz
+56ba8789e289f0212d817af371257da56132522a6d78a7c6a4f505d5ac08cfb789dbb10f0cb7ef77eea932b8c8c4da382c797c92ade91c1c95a425f8b2da8750  config-amazon-otter.armv7
+76a218d2a5b64fe1e8618fd8e210ff3d1b46508c56f76b89167cb37d91b7faf53f3259b72bd3bfe8a6c631c63ed07044690fb4358395fe7f5930e8c02878805f  0001-Update-device-tree-for-omap4-kc1.patch
 f513b104d1e0abe139681944a8c69de807d5d66a9915d4bd99f459387e0f07146d2c7a39240f739e4b00d0a2ef44a6323a5b74b2be1c60eea26ba2ae0640fbfa  0002-Input-ili210x-Fix-ili210x-touchdata-coordinates-endianness.patch
 0651d0c46afc64bf262b2a9d7c0c249434869921a9a7d79f76d8007dc29ac2e679ae5b818e1279a08379925b56365ad055adae2789ef89c837a2014c75cf63d4  0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
-2fa086a6dd1a11ac47632d2f7b3e7e6ff9db95b526429d1ab47dfe4cd18dadb0f00a84691cfec1ab3e5c42d904a38867aa3abd718e487e923dbecfe9f9933236  0004-Report-MAX_X-and-MAX_Y-on-ili210x-input-device.patch
-fca42413ec1dd40454faa62f9cb061f19bf554d8a37fb45bb034384064d97bdd81de73e76f08e85136182eaaa580cfca6d57be29cb3f0946409206f70a07fa38  0005-HACK-ili210x-Reduce-poll-period-to-1.patch"
+fca42413ec1dd40454faa62f9cb061f19bf554d8a37fb45bb034384064d97bdd81de73e76f08e85136182eaaa580cfca6d57be29cb3f0946409206f70a07fa38  0005-HACK-ili210x-Reduce-poll-period-to-1.patch
+559799525ea1668d23f0157078a36fbc8ba128031193e18dcac293e76c4c709fdc88a66984bf2376498d83bc28865d768ffd534f4394d94f0ec3a0355b9901bf  0006-Add-clk32kg-to-twl6030.patch
+"

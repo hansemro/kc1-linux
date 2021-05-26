@@ -1,7 +1,8 @@
 # Reference: <https://postmarketos.org/devicepkg>
+# Maintainer: Hansem Ro <hansemro@outlook.com>
 pkgname=device-amazon-otter
 pkgdesc="Amazon Kindle Fire"
-pkgver=0.2
+pkgver=0.1
 pkgrel=0
 url="https://postmarketos.org"
 license="MIT"
@@ -9,21 +10,39 @@ arch="armv7"
 options="!check !archcheck"
 depends="
 	linux-amazon-otter
-	mesa-dri-gallium
-	mkbootimg
 	postmarketos-base
+	u-boot-tools
 "
 makedepends="devicepkg-dev"
-source="deviceinfo"
+subpackages="
+	$pkgname-x11
+"
+
+source="
+	deviceinfo
+	xorg.conf
+	uboot-script.cmd
+"
 
 build() {
 	devicepkg_build $startdir $pkgname
+	mkimage -A arm -O linux -T script -C none -a 0 -e 0 -n postmarketos -d "$srcdir"/uboot-script.cmd "$srcdir"/boot.scr
 }
 
 package() {
 	devicepkg_package $startdir $pkgname
+	install -D -m644 "$srcdir"/boot.scr \
+		"$pkgdir"/boot/boot.scr
+}
+
+x11() {
+	install_if="$pkgname xorg-server"
+	install -D -m644 "$srcdir"/xorg.conf \
+		"$subpkgdir"/etc/X11/xorg.conf.d/11-otter.conf
 }
 
 sha512sums="
-b1c73ee9848c5cf9b90507498522c63f6052427b7b1731b8e0c9a9ee36ab4d3fcebb7ec2f0b2166695a82c73b6ac1c73f6a13cd0e9fd51a988cd4f8d4589a7f1  deviceinfo
+cf932af1696a948d0f53301ab4589591e5875b1c665c594c7c36f3bdf18c42c55ef07c2c071d52583309692030e23cdde7a064f34dbc702527e4b8a13959bb26  deviceinfo
+f15d7ef2f8a3fefb8f2f5b3276f0c1cf2364a34f36d18600d57f294169d2159d5180d5fa530faa2853abd591f17693ee49cecbf0f21ee9ee372b4868b3b65639  xorg.conf
+935d5fc36184674244c904a3e7ef31789e6e10a2869787a5e2ff608c3a234aa81d60ccc0e821cc9a96e144f342da6117408502825c43d6a5ce430bad890d3298  uboot-script.cmd
 "
