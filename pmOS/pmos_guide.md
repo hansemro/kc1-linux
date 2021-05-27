@@ -1,6 +1,8 @@
 postmarketOS Build and Install Guide
 ------------------------------------
 
+postmarketOS provides a self-contained build utility called pmbootstrap. It can build kernel and rootfs among other things.
+
 ## Install and setup pmbootstrap
 
 Optionally, install [argcomplete](https://wiki.postmarketos.org/wiki/Installing_pmbootstrap#Tab_completion) for tab completion.
@@ -37,14 +39,70 @@ $ pmbootstrap build --force device-amazon-otter
 $ pmbootstrap install
 ```
 
-## Manual Install
+## Install
 
-Prerequisites:
-- Install u-boot version L2.12 or greater.
-- System partition (`/dev/mmcblk0p9`) greater than 200MB (preferably as large as possible)
+### U-Boot Setup (L2.13 or newer required)
+
+Since postmarketOS prefers separate root and boot partitions, we will need to define where to install each. Fortunately, because u-boot source is easily mendable, we can tell the postmarketOS bootscript which partitions to load. By default, u-boot defines partitions 11 and 12 as boot and root partitions, respectively.
+
+If the boot partition is located somewhere else, we will need to modify u-boot to tell it where the boot script is located. To do so, just modify `bootpart` and `rootpart` environment variables under `CONFIG_EXTRA_ENV_SETTINGS` in `u-boot/include/configs/omap4_kc1.h`, recompile, and reinstall. Note that numbers in u-boot are represented in hex by default.
+
+### Fastboot Install
+
+#### Installation scenario: Stock layout
+- Install root to `/dev/mmcblk0p12` aka `media` partition (5380MB)
+- Install boot to `/dev/mmcblk0p11` aka `cache` partition (268MB)
+
+```
+$ pmbootstrap export
+$ sudo losetup /dev/loop0 /tmp/postmarketOS-export/amazon-otter.img
+$ sudo dd if=/dev/loop0p1 of=/tmp/cache.img
+$ sudo dd if=/dev/loop0p2 of=/tmp/system.img
+$ fastboot flash cache /tmp/cache.img
+$ fastboot flash system /tmp/system.img
+```
+
+Enter recovery and make some additional changes:
+```
+$ adb shell "cd /cache && cp vmlinuz-* vmlinuz-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
+```
+
+#### Installation scenario: Modified partition layout
+- Install root to `/dev/mmcblk0p9`
+- Install boot to `/dev/mmcblk0p11` aka `cache` partition
+
+Set `bootpart` to 0xc and `rootpart` to 0x9 in `u-boot/include/configs/omap4_kc1.h`.
+
+```
+## pwd=kc1-linux/u-boot
+$ ./make.sh
+$ fastboot flash bootloader u-boot.bin
+$ pmbootstrap export
+$ sudo losetup /dev/loop0 /tmp/postmarketOS-export/amazon-otter.img
+$ sudo dd if=/dev/loop0p1 of=/tmp/cache.img
+$ sudo dd if=/dev/loop0p2 of=/tmp/system.img
+$ fastboot flash cache /tmp/cache.img
+$ fastboot flash system /tmp/system.img
+```
+
+Enter recovery and make some additional changes:
+```
+$ adb shell "cd /cache && cp vmlinuz-* vmlinuz-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
+```
+
+### Manual Install
+
+Installation scenario: Modified partition layout
+- Install root to `/dev/mmcblk0p9`
+- Install boot to `/dev/mmcblk0p11`
+
+Set `bootpart` to 0xc and `rootpart` to 0x9 in `u-boot/include/configs/omap4_kc1.h`.
 
 ```
 ## install multipath-tools for kpartx (for mounting convenience)
+## pwd=kc1-linux/u-boot
+$ ./make.sh
+$ fastboot flash bootloader u-boot.bin
 $ pmbootstrap export
 $ sudo kpartx -a /tmp/postmarketOS-export/amazon-otter.img
 $ sudo mkdir -p /mnt/boot
@@ -54,12 +112,14 @@ $ sudo mount /dev/mapper/loop0p2 /mnt/rootfs
 $ cd /mnt/boot && sudo tar -czvf /tmp/boot.tar.gz ./
 $ cd /mnt/rootfs && sudo tar -czvf /tmp/rootfs.tar.gz ./
 $ adb shell "mount /dev/block/mmcblk0p9 /system"
-$ adb push /tmp/boot.tar.gz /system
+$ adb push /tmp/boot.tar.gz /cache
 $ adb push /tmp/rootfs.tar.gz /system
 $ adb shell "cd /system && tar -xzvf rootfs.tar.gz && rm rootfs.tar.gz"
-$ adb shell "cd /system && tar -xzvf boot.tar.gz -C boot/ && rm boot.tar.gz"
-$ adb shell "cd /system/boot && cp uImage-* uImage-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
+$ adb shell "cd /cache && tar -xzvf boot.tar.gz && rm boot.tar.gz"
+$ adb shell "cd /cache && cp vmlinuz-* vmlinuz-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
 $ adb shell sync
+$ adb shell "tune2fs -L pmOS_root /dev/block/mmcblk0p9"
+$ adb shell "tune2fs -L pmOS_boot /dev/block/mmcblk0p11"
 ```
 
 Cleanup:
@@ -83,3 +143,4 @@ $ sudo rm /tmp/boot.tar.gz /tmp/rootfs.tar.gz
 
 - https://wiki.postmarketos.org/wiki/Installing_pmbootstrap
 - https://wiki.postmarketos.org/wiki/Xfce4
+- https://wiki.postmarketos.org/wiki/OnePlus_One_(oneplus-bacon)

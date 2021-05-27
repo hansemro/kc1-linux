@@ -2,7 +2,7 @@
 # Maintainer: Hansem Ro <hansemro@outlook.com>
 
 pkgname=linux-amazon-otter
-pkgver=5.12.0
+pkgver=5.11.0
 pkgrel=0
 pkgdesc="Amazon Kindle Fire kernel fork"
 arch="armv7"
@@ -22,11 +22,12 @@ makedepends="
 	flex
 	openssl-dev
 	perl
+	u-boot-tools
 "
 
 # Source
 _repository="linux"
-_commit="9f4ad9e425a1d3b6a34617b8ea226d56a119a717"
+_commit="f40ddce88593482919761f74910f42f4b84c004b"
 _config="config-$_flavor.$arch"
 source="
 	$pkgname-$_commit.tar.gz::https://github.com/torvalds/$_repository/archive/$_commit.tar.gz
@@ -67,8 +68,8 @@ package() {
 }
 
 sha512sums="
-70aaff2a14cb7d7d0b5d697e80e8452c8e275473dc73fe6c80bebf586de26a9129a6bae8042438b40a577e0803acf9271f9f67d61e76fd09b8714d4d86684431  linux-amazon-otter-9f4ad9e425a1d3b6a34617b8ea226d56a119a717.tar.gz
-56ba8789e289f0212d817af371257da56132522a6d78a7c6a4f505d5ac08cfb789dbb10f0cb7ef77eea932b8c8c4da382c797c92ade91c1c95a425f8b2da8750  config-amazon-otter.armv7
+dc57f8b2ee77b19027a50c884c5c6a4e15fdcb2bba3478c169679133e8aa774ae31c9c7b6ca89c67e203e16d5a12f16adceb83761d6a96b7b11f38e887c0f4b8  linux-amazon-otter-f40ddce88593482919761f74910f42f4b84c004b.tar.gz
+0db40c983988d36c9ce21fc2dfb2d499820b61bf9c352c01a959b2cafd577dab6aa5de59f998792e6a8056ffaa9a69d5bd2926d62f1febd9730322fbfda8879b  config-amazon-otter.armv7
 76a218d2a5b64fe1e8618fd8e210ff3d1b46508c56f76b89167cb37d91b7faf53f3259b72bd3bfe8a6c631c63ed07044690fb4358395fe7f5930e8c02878805f  0001-Update-device-tree-for-omap4-kc1.patch
 f513b104d1e0abe139681944a8c69de807d5d66a9915d4bd99f459387e0f07146d2c7a39240f739e4b00d0a2ef44a6323a5b74b2be1c60eea26ba2ae0640fbfa  0002-Input-ili210x-Fix-ili210x-touchdata-coordinates-endianness.patch
 0651d0c46afc64bf262b2a9d7c0c249434869921a9a7d79f76d8007dc29ac2e679ae5b818e1279a08379925b56365ad055adae2789ef89c837a2014c75cf63d4  0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
