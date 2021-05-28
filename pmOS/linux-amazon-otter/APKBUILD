@@ -37,6 +37,7 @@ source="
 	0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
 	0005-HACK-ili210x-Reduce-poll-period-to-1.patch
 	0006-Add-clk32kg-to-twl6030.patch
+	0007-omap4-kc1-Add-acclerometer-support.patch
 "
 builddir="$srcdir/$_repository-$_commit"
 _outdir="out"
@@ -75,4 +76,5 @@ f513b104d1e0abe139681944a8c69de807d5d66a9915d4bd99f459387e0f07146d2c7a39240f739e
 0651d0c46afc64bf262b2a9d7c0c249434869921a9a7d79f76d8007dc29ac2e679ae5b818e1279a08379925b56365ad055adae2789ef89c837a2014c75cf63d4  0003-Input-ili210x-add-missing-negation-for-touch-indicat.patch
 fca42413ec1dd40454faa62f9cb061f19bf554d8a37fb45bb034384064d97bdd81de73e76f08e85136182eaaa580cfca6d57be29cb3f0946409206f70a07fa38  0005-HACK-ili210x-Reduce-poll-period-to-1.patch
 559799525ea1668d23f0157078a36fbc8ba128031193e18dcac293e76c4c709fdc88a66984bf2376498d83bc28865d768ffd534f4394d94f0ec3a0355b9901bf  0006-Add-clk32kg-to-twl6030.patch
+3c45acd5ea1993c8587db56a63d8c83cb6fa26621aecbe60b948f63d1e94ad7e41cc9b06b0b5fec71ed2909cc2e265341c20a451ed8d56acaa45aa7ddf1342c4  0007-omap4-kc1-Add-acclerometer-support.patch
 "

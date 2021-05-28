@@ -57,9 +57,9 @@ If the boot partition is located somewhere else, we will need to modify u-boot t
 $ pmbootstrap export
 $ sudo losetup /dev/loop0 /tmp/postmarketOS-export/amazon-otter.img
 $ sudo dd if=/dev/loop0p1 of=/tmp/cache.img
-$ sudo dd if=/dev/loop0p2 of=/tmp/system.img
+$ sudo dd if=/dev/loop0p2 of=/tmp/media.img
 $ fastboot flash cache /tmp/cache.img
-$ fastboot flash system /tmp/system.img
+$ fastboot flash media /tmp/media.img
 ```
 
 Enter recovery and make some additional changes:
