@@ -36,7 +36,7 @@ $ pmbootstrap checksum linux-amazon-otter
 $ pmbootstrap build --force linux-amazon-otter
 $ pmbootstrap checksum device-amazon-otter
 $ pmbootstrap build --force device-amazon-otter
-$ pmbootstrap install
+$ pmbootstrap install --split
 ```
 
 ## Install
@@ -55,11 +55,8 @@ If the boot partition is located somewhere else, we will need to modify u-boot t
 
 ```
 $ pmbootstrap export
-$ sudo losetup /dev/loop0 /tmp/postmarketOS-export/amazon-otter.img
-$ sudo dd if=/dev/loop0p1 of=/tmp/cache.img
-$ sudo dd if=/dev/loop0p2 of=/tmp/media.img
-$ fastboot flash cache /tmp/cache.img
-$ fastboot flash media /tmp/media.img
+$ fastboot flash media /tmp/postmarketOS-export/amazon-otter-root.img
+$ fastboot flash cache /tmp/postmarketOS-export/amazon-otter-boot.img
 ```
 
 #### Installation scenario: Modified partition layout
@@ -73,11 +70,8 @@ Set `bootpart` to 0xc and `rootpart` to 0x9 in `u-boot/include/configs/omap4_kc1
 $ ./make.sh
 $ fastboot flash bootloader u-boot.bin
 $ pmbootstrap export
-$ sudo losetup /dev/loop0 /tmp/postmarketOS-export/amazon-otter.img
-$ sudo dd if=/dev/loop0p1 of=/tmp/cache.img
-$ sudo dd if=/dev/loop0p2 of=/tmp/system.img
-$ fastboot flash cache /tmp/cache.img
-$ fastboot flash system /tmp/system.img
+$ fastboot flash system /tmp/postmarketOS-export/amazon-otter-root.img
+$ fastboot flash cache /tmp/postmarketOS-export/amazon-otter-boot.img
 ```
 
 ### Manual Install
@@ -89,16 +83,14 @@ Installation scenario: Modified partition layout
 Set `bootpart` to 0xc and `rootpart` to 0x9 in `u-boot/include/configs/omap4_kc1.h`.
 
 ```
-## install multipath-tools for kpartx (for mounting convenience)
 ## pwd=kc1-linux/u-boot
 $ ./make.sh
 $ fastboot flash bootloader u-boot.bin
 $ pmbootstrap export
-$ sudo kpartx -a /tmp/postmarketOS-export/amazon-otter.img
 $ sudo mkdir -p /mnt/boot
 $ sudo mkdir -p /mnt/rootfs
-$ sudo mount /dev/mapper/loop0p1 /mnt/boot
-$ sudo mount /dev/mapper/loop0p2 /mnt/rootfs
+$ sudo mount /tmp/postmarketOS-export/amazon-otter-boot.img /mnt/boot
+$ sudo mount /tmp/postmarketOS-export/amazon-otter-root.img /mnt/rootfs
 $ cd /mnt/boot && sudo tar -czvf /tmp/boot.tar.gz ./
 $ cd /mnt/rootfs && sudo tar -czvf /tmp/rootfs.tar.gz ./
 $ adb shell "mount /dev/block/mmcblk0p9 /system"
@@ -115,7 +107,6 @@ Cleanup:
 ```
 $ sudo umount /mnt/rootfs
 $ sudo umount /mnt/boot
-$ sudo kpartx -d /tmp/postmarketOS-export/amazon-otter.img
 $ sudo rm /tmp/boot.tar.gz /tmp/rootfs.tar.gz
 ```
 
