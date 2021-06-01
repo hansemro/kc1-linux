@@ -62,11 +62,6 @@ $ fastboot flash cache /tmp/cache.img
 $ fastboot flash media /tmp/media.img
 ```
 
-Enter recovery and make some additional changes:
-```
-$ adb shell "cd /cache && cp vmlinuz-* vmlinuz-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
-```
-
 #### Installation scenario: Modified partition layout
 - Install root to `/dev/mmcblk0p9`
 - Install boot to `/dev/mmcblk0p11` aka `cache` partition
@@ -83,11 +78,6 @@ $ sudo dd if=/dev/loop0p1 of=/tmp/cache.img
 $ sudo dd if=/dev/loop0p2 of=/tmp/system.img
 $ fastboot flash cache /tmp/cache.img
 $ fastboot flash system /tmp/system.img
-```
-
-Enter recovery and make some additional changes:
-```
-$ adb shell "cd /cache && cp vmlinuz-* vmlinuz-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
 ```
 
 ### Manual Install
@@ -116,7 +106,6 @@ $ adb push /tmp/boot.tar.gz /cache
 $ adb push /tmp/rootfs.tar.gz /system
 $ adb shell "cd /system && tar -xzvf rootfs.tar.gz && rm rootfs.tar.gz"
 $ adb shell "cd /cache && tar -xzvf boot.tar.gz && rm boot.tar.gz"
-$ adb shell "cd /cache && cp vmlinuz-* vmlinuz-amazon-otter && cp uInitrd-* uInitrd-amazon-otter"
 $ adb shell sync
 $ adb shell "tune2fs -L pmOS_root /dev/block/mmcblk0p9"
 $ adb shell "tune2fs -L pmOS_boot /dev/block/mmcblk0p11"
@@ -141,6 +130,7 @@ $ sudo rm /tmp/boot.tar.gz /tmp/rootfs.tar.gz
 
 ## Resources
 
+- https://gitlab.com/postmarketOS/pmaports/-/merge_requests/2202
 - https://wiki.postmarketos.org/wiki/Installing_pmbootstrap
 - https://wiki.postmarketos.org/wiki/Xfce4
 - https://wiki.postmarketos.org/wiki/OnePlus_One_(oneplus-bacon)
