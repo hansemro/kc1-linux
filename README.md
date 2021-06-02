@@ -63,23 +63,23 @@ This project requires the following:
 
 Add to `/etc/udev/rules.d/50-kc1.rules`:
 ```
-SUBSYSTEM=="usb", ATTR{idVendor}=="1949", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="1949",MODE="0666"
 SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0004",SYMLINK+="android_adb"
 SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0004",SYMLINK+="android_fastboot"
 
-SUBSYSTEM=="usb", ATTR{idVendor}=="1949", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="1949",MODE="0666"
 SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0007",SYMLINK+="android_adb"
 SUBSYSTEM=="usb",ATTR{idVendor}=="1949",ATTR{idProduct}=="0007",SYMLINK+="android_fastboot"
 
-SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",MODE="0666"
 SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="0100",SYMLINK+="android_adb"
 SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="0100",SYMLINK+="android_fastboot"
 
-SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",MODE="0666"
 SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="d001",SYMLINK+="android_adb"
 SUBSYSTEM=="usb",ATTR{idVendor}=="18d1",ATTR{idProduct}=="d001",SYMLINK+="android_fastboot"
 
-SUBSYSTEM=="usb", ATTR{idVendor}=="0451", MODE="0666"
+SUBSYSTEM=="usb",ATTR{idVendor}=="0451",MODE="0666"
 SUBSYSTEM=="usb",ATTR{idVendor}=="0451",ATTR{idProduct}=="d00f",SYMLINK+="android_adb"
 SUBSYSTEM=="usb",ATTR{idVendor}=="0451",ATTR{idProduct}=="d00f",SYMLINK+="android_fastboot"
 ```
@@ -127,7 +127,7 @@ Add the following to `~/.bashrc` and then source it:
 ```
 ## Change ARM_TOOLCHAINS_DIR if necessary
 export ARM_TOOLCHAINS_DIR=$HOME/arm_toolchains
-export LIN49_ARM_EABI=$ARM_TOOLCHAINS_DIR/gcc-linaro-4.9-2016.02-x86_64_arm-eabi/bin/arm-eabi-
+export LIN49_ARM_EABI=$ARM_TOOLCHAINS_DIR/gcc-linaro-4.9.4-2017.01-x86_64_arm-eabi/bin/arm-eabi-
 export LIN65_ARM_LHF=$ARM_TOOLCHAINS_DIR/gcc-linaro-6.5.0-2018.12-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-
 ```
 
@@ -209,12 +209,12 @@ You may encounter errors while building the kernel. Fortunately, many of which h
 ```
 ## pwd=kc1-linux/
 ## My fork: https://github.com/hansemro/linux.git
-$ git clone https://github.com/torvalds/linux.git mainline
+$ git clone git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git mainline
 $ cp scripts/make-linux.sh mainline/make.sh
 $ cp config/omap4_kc1.config mainline/.config
 $ cp patches/*.patch mainline/
 $ cd mainline
-$ git checkout v5.12
+$ git checkout v5.11
 ## Apply 0001 patch if you are using upstream's devicetree (not from this repo)
 ## Patch 0004 is no longer needed, but it doesn't hurt to have it applied either.
 $ patch -p1 < 0001*.patch
@@ -324,11 +324,11 @@ Set the kindle to recovery mode and run the following when the PC detects the ki
 ## pwd=kc1-linux/
 $ mkdir backups
 $ cd backups
-$ adb pull /mnt/block/mmcblk0boot0 mmcblk0boot0.img
-$ adb pull /mnt/block/mmcblk0boot1 mmcblk0boot1.img
-$ for i in 1 2 .. 12; do adb pull /dev/block/mmcblk0p$i mmcblk0p$i.img; done
+$ adb pull /dev/block/mmcblk0boot0 mmcblk0boot0.img
+$ adb pull /dev/block/mmcblk0boot1 mmcblk0boot1.img
+$ for i in $(seq 1 12); do adb pull /dev/block/mmcblk0p$i mmcblk0p$i.img; done
 $ adb pull /proc/partitions partitions.txt
-$ adb shell "echo "p" | parted /dev/block/mmcblk0" > partition_info.txt
+$ adb shell parted /dev/block/mmcblk0 p > partition_info.txt
 ```
 
 ### 4. Repartitioning and Installing rootfs
