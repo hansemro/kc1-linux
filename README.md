@@ -263,6 +263,7 @@ Skip steps 1 and 3 if you already have TWRP with working adb installed.
 "Rooting" is only required if the Kindle Fire is on newer stock firmware (FireOS > 6.3.0) and the device cannot get access to fastboot mode by some other method (fastboot cable, custom bootloader, etc).
 
 ```
+## pwd=kc1-linux/
 ## Get saferoot.zip
 ## Relevant xda post:
 ## https://forum.xda-developers.com/t/root-saferoot-root-for-vruemj7-mk2-and-android-4-3.2565758/#post-48392009
@@ -274,6 +275,7 @@ $ wget https://forum.xda-developers.com/attachments/saferoot-zip.2760984/ -O saf
 $ mkdir saferoot
 $ cd saferoot
 $ unzip ../saferoot.zip
+$ patch -p1 < ../patches/saferoot/0001*.patch
 $ ./install.sh
 ```
 
