@@ -27,7 +27,7 @@ With some patches to mainline kernel, the device can boot into userspace with se
 | PMIC               | Partial | TI TWL6030 |
 | Green LED          | Works   | TWL6030 PWM led |
 | Orange LED         | Works   | TWL6030 PWM led |
-| Power Button       | Works   | TI TWL6030 |
+| Power Button       | &cross; | TI TWL6030 |
 | RTC                | Works   | TI TWL6030 |
 | Battery            | Works   | 3V3 4400mAh Li-Ion Battery |
 | Fuel Gauge         | Works   | [i2c] TI BQ27541 |
@@ -216,6 +216,7 @@ $ cp patches/*.patch mainline/
 $ cd mainline
 $ git checkout v5.11
 ## Apply 0001 patch if you are using upstream's devicetree (not from this repo)
+## Patch 0003 is already upstreamed and may not be needed for some versions.
 ## Patch 0004 is no longer needed, but it doesn't hurt to have it applied either.
 $ patch -p1 < 0001*.patch
 $ patch -p1 < 0002*.patch
