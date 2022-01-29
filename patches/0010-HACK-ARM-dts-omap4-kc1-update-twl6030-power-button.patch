@@ -1,0 +1,28 @@
+From baa9a13f2a06968888ad1352570f8b8b8fd192c8 Mon Sep 17 00:00:00 2001
+From: Hansem Ro <hansemro@outlook.com>
+Date: Sat, 29 Jan 2022 00:28:48 -0800
+Subject: [PATCH] [HACK] ARM: dts: omap4-kc1: update twl6030 power button
+
+Relies on 0009-HACK-Input-twl4030-pwrbutton-Support-twl6030-variant.patch
+---
+ arch/arm/boot/dts/omap4-kc1.dts | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/boot/dts/omap4-kc1.dts b/arch/arm/boot/dts/omap4-kc1.dts
+index e59d17b25a1d..b46cba4ed4eb 100644
+--- a/arch/arm/boot/dts/omap4-kc1.dts
++++ b/arch/arm/boot/dts/omap4-kc1.dts
+@@ -114,8 +114,8 @@ twl: twl@48 {
+ 		interrupts = <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>; /* IRQ_SYS_1N cascaded to gic */
+ 
+ 		twl_power: power {
+-			compatible = "ti,twl6030-power";
+-			ti,system-power-controller;
++			compatible = "ti,twl6030-pwrbutton";
++			interrupts = <0>;
+ 		};
+ 	};
+ };
+-- 
+2.34.1
+

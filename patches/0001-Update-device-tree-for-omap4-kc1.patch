@@ -1,0 +1,416 @@
+From f5687360f21bf1e9868136fdf9279f019daa832a Mon Sep 17 00:00:00 2001
+From: Hansem Ro <hansemro@outlook.com>
+Date: Sun, 30 May 2021 03:46:32 -0700
+Subject: [PATCH v3] Update device tree for omap4-kc1
+
+This is a temporary device tree patch for Amazon Kindle Fire.
+
+Device tree changes:
+- Add Battery with fuel guage support
+- Add DSS + Panel + basic backlight support
+- Add touchscreen support
+- Add temperature sensor support
+- Add charger IC support
+- Add accelerometer support
+- Add initial WLAN support
+- Aliased mmc2 (eMMC) to mmc0
+- Set green LED as device's heartbeat
+
+Comments:
+- touchscreen requires additional patches to work for kernels <5.13.
+  - [PATCH v2] Input: ili210x - add missing negation for touch indication
+    on ili210x
+  - [PATCH] Input: ili210x - Fix ili210x touchdata coordinates endianness.
+- wl12xx driver requires additional patch to enable clk32kg.
+- Backlight can be turned on/off but its brightness cannot be changed.
+---
+ arch/arm/boot/dts/omap4-kc1-bl.dtsi   |  45 ++++++++++
+ arch/arm/boot/dts/omap4-kc1-dss.dtsi  | 114 ++++++++++++++++++++++++++
+ arch/arm/boot/dts/omap4-kc1-wlan.dtsi |  80 ++++++++++++++++++
+ arch/arm/boot/dts/omap4-kc1.dts       |  66 +++++++++++++++
+ 4 files changed, 305 insertions(+)
+ create mode 100644 arch/arm/boot/dts/omap4-kc1-bl.dtsi
+ create mode 100644 arch/arm/boot/dts/omap4-kc1-dss.dtsi
+ create mode 100644 arch/arm/boot/dts/omap4-kc1-wlan.dtsi
+
+diff --git a/arch/arm/boot/dts/omap4-kc1-bl.dtsi b/arch/arm/boot/dts/omap4-kc1-bl.dtsi
+new file mode 100644
+index 000000000000..301f459c2427
+--- /dev/null
++++ b/arch/arm/boot/dts/omap4-kc1-bl.dtsi
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Hansem Ro <hansemro@outlook.com>
++ */
++
++/ {
++	lcd2_power: lcd2_power_reg {
++		compatible = "regulator-fixed";
++		regulator-name = "lcd2_power";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		enable-active-high;
++	};
++
++	bl: backlight {
++		compatible = "pwm-backlight";
++		brightness-levels = <0 4 8 16 32 64 128 255>;
++		num-interpolated-steps = <256>;
++		default-brightness-level = <5>;
++		enable-gpio = <
++			&gpio2 13 GPIO_ACTIVE_HIGH /* gpio_45 LCD_EN */
++			>;
++		power-supply = <&lcd2_power>;
++		pwms = <&pwm10 0 75000 0>; /* 75 KHz */
++	};
++
++	pwm10: dmtimer-pwm@10 {
++		pinctrl-names = "default";
++		pinctrl-0 = <&timer10_pins>;
++		gpio = <&gpio2 30 GPIO_ACTIVE_HIGH>; /* gpio_94 */
++		compatible = "ti,omap-dmtimer-pwm";
++		ti,timers = <&timer10>;
++		ti,prescaler = <0>; /* prescale = 1 */
++		ti,clock-source = <1>; /* 32 KHz source */
++		#pwm-cells = <3>;
++	};
++};
++
++&omap4_pmx_core {
++	timer10_pins: pinmux_timer10_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x0d6, PIN_OUTPUT | MUX_MODE1) /* dmtimer10_pwm_evt.gpio_94*/
++		>;
++	};
++};
+diff --git a/arch/arm/boot/dts/omap4-kc1-dss.dtsi b/arch/arm/boot/dts/omap4-kc1-dss.dtsi
+new file mode 100644
+index 000000000000..d84b9c191b3d
+--- /dev/null
++++ b/arch/arm/boot/dts/omap4-kc1-dss.dtsi
+@@ -0,0 +1,114 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * 04/29/2021:
++ * Hansem Ro                    : Backlight, PWM LED, PWM GPTimer, Battery, and pinmux configs, and all other crucial platform support
++ * Michael John Sakellaropoulos : Added LCD powereg, Added required DSS nodes and graph_port connections for LCD2 over DPI
++ */
++
++/ {
++	aliases {
++		display0 = &lcd2;
++	};
++
++	lcd2: display {
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcd_pins>;
++		compatible = "panel-dpi";
++		status = "okay";
++		label = "lcd2";
++		power-supply = <&lcd2_power>;
++		backlight = <&bl>;
++
++		panel-timing {
++			/* 1024x600p */
++			/* From uboot */
++			clock-frequency = <51200000>;
++			hactive = <1024>; //x_res
++			vactive = <600>; //y_res
++			hsync-len = <10>; //hsw
++			hfront-porch = <160>; //hfp
++			hback-porch = <150>; //hbp
++			vfront-porch = <12>; //vfp
++			vback-porch = <20>; //vbp
++			vsync-len = <3>; //vsw
++		};
++
++		ports {
++			port@0 {
++				panel_dpi_in: endpoint {
++					remote-endpoint = <&dpi_out_0>;
++				};
++			};
++		};
++	};
++};
++
++&omap4_pmx_core {
++	dss_dpi_pins: pinmux_dss_dpi_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x162, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data23 */
++			OMAP4_IOPAD(0x164, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data22 */
++			OMAP4_IOPAD(0x166, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data21 */
++			OMAP4_IOPAD(0x168, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data20 */
++			OMAP4_IOPAD(0x16a, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data19 */
++			OMAP4_IOPAD(0x16c, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data18 */
++			OMAP4_IOPAD(0x16e, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data15 */
++			OMAP4_IOPAD(0x170, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data14 */
++			OMAP4_IOPAD(0x172, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data13 */
++			OMAP4_IOPAD(0x174, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data12 */
++			OMAP4_IOPAD(0x176, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data11 */
++
++			OMAP4_IOPAD(0x1b4, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data10 */
++			OMAP4_IOPAD(0x1b6, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data9 */
++			OMAP4_IOPAD(0x1b8, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data16 */
++			OMAP4_IOPAD(0x1ba, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data17 */
++			OMAP4_IOPAD(0x1bc, PIN_OUTPUT | MUX_MODE5)	/* dispc2_hsync */
++			OMAP4_IOPAD(0x1be, PIN_OUTPUT | MUX_MODE5)	/* dispc2_pclk */
++			OMAP4_IOPAD(0x1c0, PIN_OUTPUT | MUX_MODE5)	/* dispc2_vsync */
++			OMAP4_IOPAD(0x1c2, PIN_OUTPUT | MUX_MODE5)	/* dispc2_de */
++			OMAP4_IOPAD(0x1c4, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data8 */
++			OMAP4_IOPAD(0x1c6, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data7 */
++			OMAP4_IOPAD(0x1c8, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data6 */
++			OMAP4_IOPAD(0x1ca, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data5 */
++			OMAP4_IOPAD(0x1cc, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data4 */
++			OMAP4_IOPAD(0x1ce, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data3 */
++
++			OMAP4_IOPAD(0x1d0, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data2 */
++			OMAP4_IOPAD(0x1d2, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data1 */
++			OMAP4_IOPAD(0x1d4, PIN_OUTPUT | MUX_MODE5)	/* dispc2_data0 */
++		>;
++	};
++
++	lcd_pins: pinmux_lcd_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x06a, PIN_OUTPUT | MUX_MODE3) /* gpio_45 LCD_PWR_ON */
++		>;
++	};
++};
++
++&dss {
++	pinctrl-names = "default";
++	pinctrl-0 = <&dss_dpi_pins>;
++	status = "okay";
++
++	vdda_video-supply = <&vcxio>;
++
++	port {
++		/*reg = <0>;*/
++
++		dpi_out_0: endpoint {
++			remote-endpoint = <&panel_dpi_in>;
++			data-lines = <24>;
++		};
++	};
++};
++
++&dsi1 {
++	status = "okay";
++	vdd-supply = <&vcxio>;
++};
++
++&dsi2 {
++	status = "okay";
++	vdd-supply = <&vcxio>;
++};
+diff --git a/arch/arm/boot/dts/omap4-kc1-wlan.dtsi b/arch/arm/boot/dts/omap4-kc1-wlan.dtsi
+new file mode 100644
+index 000000000000..f9e99561a385
+--- /dev/null
++++ b/arch/arm/boot/dts/omap4-kc1-wlan.dtsi
+@@ -0,0 +1,80 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Maintained by Hansem Ro <hansemro@outlook.com>
++ */
++
++/ {
++	aliases {
++		mmc4 = &mmc5;
++	};
++
++	/* regulator for wl12xx on sdio5 */
++	wl12xx_vmmc: wl12xx_vmmc {
++		pinctrl-names = "default";
++		pinctrl-0 = <&wl12xx_gpio>;
++		compatible = "regulator-fixed";
++		regulator-name = "vwl1271";
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++		gpio = <&gpio2 22 GPIO_ACTIVE_HIGH>; /* gpio_54 */
++		startup-delay-us = <70000>;
++		enable-active-high;
++	};
++};
++
++&omap4_pmx_core {
++	uart2_pins: pinmux_uart2_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x118, PIN_INPUT_PULLUP | MUX_MODE0)	/* uart2_cts.uart2_cts */
++			OMAP4_IOPAD(0x11a, PIN_OUTPUT | MUX_MODE0)		/* uart2_rts.uart2_rts */
++			OMAP4_IOPAD(0x11c, PIN_INPUT_PULLUP | MUX_MODE0)	/* uart2_rx.uart2_rx */
++			OMAP4_IOPAD(0x11e, PIN_OUTPUT | MUX_MODE0)		/* uart2_tx.uart2_tx */
++		>;
++	};
++
++	/* wl12xx GPIO output for WLAN_EN */
++	wl12xx_gpio: pinmux_wl12xx_gpio {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x07c, PIN_OUTPUT | MUX_MODE3)		/* WLAN_EN; gpmc_ncs3.gpio_54 */
++		>;
++	};
++
++	/* wl12xx GPIO input for WLAN_IRQ and SDIO pins */
++	wl12xx_pins: pinmux_wl12xx_pins {
++		pinctrl-single,pins = <
++			OMAP4_IOPAD(0x07a, PIN_INPUT | MUX_MODE3)		/* WLAN_IRQ; gpmc_nwp.gpio_53 */
++			OMAP4_IOPAD(0x148, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_clk.sdmmc5_clk */
++			OMAP4_IOPAD(0x14a, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_cmd.sdmmc5_cmd */
++			OMAP4_IOPAD(0x14c, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat0.sdmmc5_dat0 */
++			OMAP4_IOPAD(0x14e, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat1.sdmmc5_dat1 */
++			OMAP4_IOPAD(0x150, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat2.sdmmc5_dat2 */
++			OMAP4_IOPAD(0x152, PIN_INPUT_PULLUP | MUX_MODE0)	/* sdmmc5_dat3.sdmmc5_dat3 */
++		>;
++	};
++};
++
++&uart2 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&uart2_pins>;
++	status = "okay";
++};
++
++&mmc5 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&wl12xx_pins>;
++	status = "okay";
++	vmmc-supply = <&wl12xx_vmmc>;
++	non-removable;
++	bus-width = <4>;
++	cap-power-off-card;
++
++	#address-cells = <1>;
++	#size-cells = <0>;
++	wlcore: wlcore@2 {
++		compatible = "ti,wl1271";
++		reg = <2>;
++		interrupt-parent = <&gpio2>;
++		interrupts = <21 IRQ_TYPE_LEVEL_HIGH>; /* gpio 53 */
++		ref-clock-frequency = <38400000>;
++	};
++};
+diff --git a/arch/arm/boot/dts/omap4-kc1.dts b/arch/arm/boot/dts/omap4-kc1.dts
+index e59d17b25a1d..74249ccc54dc 100644
+--- a/arch/arm/boot/dts/omap4-kc1.dts
++++ b/arch/arm/boot/dts/omap4-kc1.dts
+@@ -5,11 +5,22 @@
+ /dts-v1/;
+ 
+ #include "omap443x.dtsi"
++#include "omap4-kc1-wlan.dtsi"
++#include "omap4-kc1-bl.dtsi"
++#include "omap4-kc1-dss.dtsi"
+ 
+ / {
+ 	model = "Amazon Kindle Fire (first generation)";
+ 	compatible = "amazon,omap4-kc1", "ti,omap4430", "ti,omap4";
+ 
++	aliases {
++		mmc0 = &mmc2;
++		mmc1 = &mmc1;
++		mmc2 = &mmc3;
++		mmc3 = &mmc4;
++		mmc4 = &mmc5;
++	};
++
+ 	memory@80000000 {
+ 		device_type = "memory";
+ 		reg = <0x80000000 0x20000000>; /* 512 MB */
+@@ -22,6 +33,7 @@ led-1 {
+ 			label = "green";
+ 			pwms = <&twl_pwm 0 7812500>;
+ 			max-brightness = <127>;
++			linux,default-trigger = "heartbeat";
+ 		};
+ 
+ 		led-2 {
+@@ -30,6 +42,11 @@ led-2 {
+ 			max-brightness = <127>;
+ 		};
+ 	};
++
++	bat: battery {
++		compatible = "simple-battery";
++		/* Documentation/devicetree/bindings/power/supply/battery.yaml */
++	};
+ };
+ 
+ &omap4_pmx_core {
+@@ -108,6 +125,13 @@ &i2c1 {
+ 
+ 	clock-frequency = <400000>;
+ 
++	ti,bq27541@55 {
++		compatible = "ti,bq27541";
++		reg = <0x55>;
++		monitored-battery = <&bat>;
++		/* Documentation/devicetree/bindings/power/supply/bq27xxx.yaml */
++	};
++
+ 	twl: twl@48 {
+ 		reg = <0x48>;
+ 		/* IRQ# = 7 */
+@@ -125,6 +149,20 @@ &i2c2 {
+ 	pinctrl-0 = <&i2c2_pins>;
+ 
+ 	clock-frequency = <400000>;
++
++	touchscreen@41 {
++		compatible = "ilitek,ili210x";
++		reg = <0x41>;
++		interrupt-parent = <&gpio2>;
++		interrupts = <3 IRQ_TYPE_EDGE_FALLING /* gpio_35 TOUCH_IRQ_1 */
++			4 IRQ_TYPE_EDGE_FALLING /* gpio_36 TOUCH_IRQ_2 */
++			>;
++		reset-gpios = <&gpio1 18 GPIO_ACTIVE_LOW
++				&gpio3 8 GPIO_ACTIVE_LOW
++				>;
++		touchscreen-size-x = <3968>;
++		touchscreen-size-y = <2304>;
++	};
+ };
+ 
+ &i2c3 {
+@@ -139,6 +177,28 @@ &i2c4 {
+ 	pinctrl-0 = <&i2c4_pins>;
+ 
+ 	clock-frequency = <400000>;
++
++	accelerometer@18 {
++		compatible = "bosch,bma250";
++		reg = <0x18>;
++		vdd-supply = <&vaux2>;
++		vddio-supply = <&vaux2>;
++	};
++
++	tmp@48 {
++		compatible = "ti,tmp105";
++		reg = <0x48>;
++		status = "okay";
++	};
++
++	charger@6 {
++		compatible = "summit,smb347";
++		reg = <0x06>;
++		summit,usb-current-limit-microamp = <500000>;
++		summit,enable-usb-charging;
++		monitored-battery = <&bat>;
++		/* Documentation/devicetree/bindings/power/supply/summit,smb347-charger.yaml */
++	};
+ };
+ 
+ &mmc1 {
+@@ -177,3 +237,9 @@ &usb_otg_hs {
+ &twl_usb_comparator {
+ 	usb-supply = <&vusb>;
+ };
++
++&vaux3 {
++	regulator-min-microvolt = <3000000>;
++	regulator-max-microvolt = <3000000>;
++	regulator-always-on;
++};
+-- 
+2.31.1
+

@@ -1,0 +1,37 @@
+From: Michael John Sakellaropoulos <mjsakellaropoulos@gmail.com>
+Date: Thu, 06 May 2021 16:07:20 -0700
+Subject: [PATCH] Input: ili210x - Fix ili210x touchdata coordinates endianness
+
+This fixes how coordinates are parsed from ili210x touchdata. Through observation 
+and manual probing of the i2c bus, we have confirmed that the values stored in 
+the registers are Little Endian.
+(Tested on Amazon Kindle Fire Gen1 : arch/arm/boot/dts/omap4-kc1.dts)
+
+This patch is a follow-up to the earlier one by Hansem Ro. I am also working on another patch
+that queries the touchscreen controller for the active panel resolution (via REG_PANEL_INFO)
+so we can report the correct resolution to evdev (right now it's hardcoded).
+
+Signed-off-by: Michael John Sakellaropoulos <mjsakellaropoulos@gmail.com>
+Tested-by: Hansem Ro <hansemro@outlook.com>
+Fixes: e3559442afd2a ("ili210x - rework the touchscreen sample processing")
+---
+ drivers/input/touchscreen/ili210x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/input/touchscreen/ili210x.c b/drivers/input/touchscreen/ili210x.c
+index d8fccf048bf4..15e68d5a96d8 100644
+--- a/drivers/input/touchscreen/ili210x.c
++++ b/drivers/input/touchscreen/ili210x.c
+@@ -90,8 +90,8 @@ static bool ili210x_touchdata_to_coords(const u8 *touchdata,
+ 	if (touchdata[0] & BIT(finger))
+ 		return false;
+ 
+-	*x = get_unaligned_be16(touchdata + 1 + (finger * 4) + 0);
+-	*y = get_unaligned_be16(touchdata + 1 + (finger * 4) + 2);
++	*x = get_unaligned_le16(touchdata + 1 + (finger * 4) + 0);
++	*y = get_unaligned_le16(touchdata + 1 + (finger * 4) + 2);
+ 
+ 	return true;
+ }
+-- 
+2.27.0

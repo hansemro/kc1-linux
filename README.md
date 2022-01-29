@@ -1,10 +1,3 @@
-Mainline Linux on (First Generation) Kindle Fire
-================================================
-
-Maintained by Hansem Ro (`hansemro@outlook.com`).
-
-This repo contains documentation for bringing up mainline Linux on First Generation Kindle Fire tablet (also known as Otter or KC1).
-
 Status
 ======
 
@@ -41,10 +34,25 @@ With some patches to mainline kernel, the device can boot into userspace with se
 | Light Sensor       | &cross; | [i2c] Sensortek STK22x7 |
 | SmartReflex        | &cross; | dmesg reports errors |
 
+Makefile Overview
+=================
+
+- `make boot.img` : Build Android boot image (boot.img)
+- `make boot` : Boot boot.img via fastboot
+- `make push_modules` : Push kernel modules to device in recovery mode via adb
+- `make clean` : Clean boot.img and kernel build
+- `make bleach_all` : Wipe entire repo
+
+## Additional Make Parameters
+
+- `BUILDROOT_CONFIG=path/to/buildroot_config` : Manually specify buildroot config file
+- `CMDLINE="root=... console=..."` : Manually specify kernel parameters
+- `SYSTEM_PART_NUM=12` : Manually specify where rootfs partition is on emmc
+
 Guide
 =====
 
-Clone this repo and checkout a branch that matches Linux kernel version.
+TODO
 
 Credits
 =======
@@ -55,3 +63,11 @@ Credits
 - Hashcode (U-Boot work for Kindle Fire)
 - Linus Torvalds (Linux)
 - Others who were also important in making this possible
+
+License
+=======
+
+- Linux : GPL, Version 2
+- U-Boot : GPL, Version 2
+- Buildroot : GPL, Version 2
+- mkbootimg : Apache License, Version 2
