@@ -37,20 +37,20 @@ With some patches to mainline kernel, the device can boot into userspace with se
 Makefile Overview
 =================
 
-- `make help` : print help message"
-- `make prep` : retrieve submodules"
-- `make boot` : build and boot boot.img with fastboot"
-- `make boot.img` : build Android boot image"
-- `make boot.scr` : build u-boot kernel boot script"
-- `make bootmenu.scr` : build u-boot bootmenu script"
-- `make zImage` : build zImage"
-- `make zImage.omap4-kc1` : build zImage with DT appended"
-- `make uImage` : build uImage from zImage"
-- `make uImage.omap4-kc1` : build uImage from zImage.omap4-kc1"
-- `make push_modules` : push kernel modules via adb"
-- `make push_boot` : push DTB, kernel images, and u-boot scripts via adb"
-- `make clean` : clean built targets"
-- `make bleach_all` : wipe entire repo"
+- `make help` : print help message
+- `make prep` : retrieve submodules
+- `make boot` : build and boot boot.img with fastboot
+- `make boot.img` : build Android boot image
+- `make boot.scr` : build u-boot kernel boot script
+- `make bootmenu.scr` : build u-boot bootmenu script
+- `make zImage` : build zImage
+- `make zImage.omap4-kc1` : build zImage with DT appended
+- `make uImage` : build uImage from zImage
+- `make uImage.omap4-kc1` : build uImage from zImage.omap4-kc1
+- `make push_modules` : push kernel modules via adb
+- `make push_boot` : push DTB, kernel images, and u-boot scripts via adb
+- `make clean` : clean built targets
+- `make bleach_all` : wipe entire repo
 
 ## Additional Make Parameters
 
