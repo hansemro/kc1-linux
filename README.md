@@ -22,7 +22,7 @@ With some patches to mainline kernel, the device can boot into userspace with se
 | UART               | Works   | UART3 = `/dev/ttyO2` |
 | DSS/Framebuffer    | Works   | omapdrm successfully registers framebuffer |
 | LCD Panel          | Works   | [MIPI DPI] 1024x600 32 bits/pixel |
-| LCD Backlight      | Partial | GPTimer10 PWM driven; simple on/off support only |
+| LCD Backlight      | Works   | GPTimer10 PWM driven |
 | Touchscreen        | Works   | [i2c] Ilitek 2107; requires additional kernel patches |
 | PMIC               | Partial | TI TWL6030 |
 | Green LED          | Works   | TWL6030 PWM led |
