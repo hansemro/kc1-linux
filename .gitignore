@@ -1,0 +1,4 @@
+*.scr
+zImage*
+uImage*
+boot.img
