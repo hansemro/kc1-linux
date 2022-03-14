@@ -58,9 +58,8 @@ $(IMAGES_DIR)/zImage: $(MKBOOTIMG_BIN) buildroot buildroot_config kc1_config
 $(IMAGES_DIR)/omap4-kc1.dtb: $(IMAGES_DIR)/zImage
 	cp buildroot/output/build/linux-$(LIN_VERSION)/arch/arm/boot/dts/omap4-kc1.dtb $(IMAGES_DIR)
 
-boot.img: $(IMAGES_DIR)/zImage $(IMAGES_DIR)/omap4-kc1.dtb
-	$(MKBOOTIMG_BIN) --kernel $(IMAGES_DIR)/zImage \
-		--dt $(IMAGES_DIR)/omap4-kc1.dtb \
+boot.img: zImage.omap4-kc1
+	$(MKBOOTIMG_BIN) --kernel $< \
 		--pagesize 4096 --base 0x80000000 \
 		--ramdisk_offset 0x01000000  --kernel_offset 0x00008000 \
 		--second_offset 0x00f00000 --tags_offset 0x100 \
