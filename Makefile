@@ -8,7 +8,7 @@ CMDLINE ?= "rw rootwait console=ttyS2,115200 console=tty1 root=/dev/mmcblk0p$(SY
 MKBOOTIMG_BIN = $(CURDIR)/android_system_core/mkbootimg/mkbootimg
 
 .PHONY: all
-all: boot.img
+all: uImage.omap4-kc1 boot.img
 
 .PHONY: prep
 android_system_core:
@@ -39,6 +39,18 @@ push_modules: wait_recovery
 	adb shell sync
 	@echo 'Run `adb shell busybox reboot && make boot`'
 
+.PHONY: push_boot
+push_boot: boot.scr bootmenu.scr uImage.omap4-kc1 $(IMAGES_DIR)/zImage $(IMAGES_DIR)/omap4-kc1.dtb wait_recovery
+	adb shell rm /sdcard/boot/*.dtb
+	adb shell rm /sdcard/boot/*Image*
+	adb shell rm /sdcard/boot/*.scr
+	adb push boot.scr /sdcard/boot/
+	adb push bootmenu.scr /sdcard/boot/
+	adb push $(IMAGES_DIR)/zImage /sdcard/boot/
+	adb push $(IMAGES_DIR)/omap4-kc1.dtb /sdcard/boot/
+	adb push uImage.omap4-kc1 /sdcard/boot/
+	adb shell sync
+
 $(IMAGES_DIR)/zImage: $(MKBOOTIMG_BIN) buildroot buildroot_config kc1_config
 	-cp $(BUILDROOT_CONFIG) buildroot/.config
 	$(MAKE) -C buildroot linux-rebuild
@@ -54,8 +66,28 @@ boot.img: $(IMAGES_DIR)/zImage $(IMAGES_DIR)/omap4-kc1.dtb
 		--second_offset 0x00f00000 --tags_offset 0x100 \
 		--cmdline $(CMDLINE) -o $@
 
+boot.scr: boot.cmd
+	mkimage -C none -A arm -O linux -T script -a 0 -e 0 -d $< $@
+
+bootmenu.scr: bootmenu.cmd
+	mkimage -C none -A arm -O linux -T script -a 0 -e 0 -d $< $@
+
+zImage: $(IMAGES_DIR)/zImage
+	ln -s $< $@
+
+zImage.omap4-kc1: $(IMAGES_DIR)/zImage $(IMAGES_DIR)/omap4-kc1.dtb
+	cat $^ > $@
+
+uImage: $(IMAGES_DIR)/zImage
+	mkimage -C none -A arm -O linux -T kernel -a 0x80008000 -e 0x80008000 -d $(IMAGES_DIR)/zImage $@
+
+uImage.omap4-kc1: zImage.omap4-kc1 $(IMAGES_DIR)/omap4-kc1.dtb
+	mkimage -C none -A arm -O linux -T kernel -a 0x80008000 -e 0x80008000 -d $< $@
+
 .PHONY: clean
 clean:
+	-rm *.scr
+	-rm uImage*
 	-rm boot.img
 	-rm $(IMAGES_DIR)/zImage*
 	-$(MAKE) -C buildroot linux-dirclean
@@ -73,6 +105,13 @@ help:
 	@echo "  prep             : retrieve submodules"
 	@echo "  boot             : build and boot boot.img with fastboot"
 	@echo "  boot.img         : build Android boot image"
+	@echo "  boot.scr         : build u-boot kernel boot script"
+	@echo "  bootmenu.scr     : build u-boot bootmenu script"
+	@echo "  zImage           : build zImage"
+	@echo "  zImage.omap4-kc1 : build zImage with DT appended"
+	@echo "  uImage           : build uImage from zImage"
+	@echo "  uImage.omap4-kc1 : build uImage from zImage.omap4-kc1"
 	@echo "  push_modules     : push kernel modules via adb"
+	@echo "  push_boot        : push DTB, kernel images, and u-boot scripts via adb"
 	@echo "  clean            : clean built targets"
 	@echo "  bleach_all       : wipe entire repo"
