@@ -1,0 +1,59 @@
+From 1bbc1565fef1d7c2240747babe6bfd437dc96eaf Mon Sep 17 00:00:00 2001
+From: Hansem Ro <hansemro@outlook.com>
+Date: Mon, 14 Mar 2022 02:24:30 -0700
+Subject: [PATCH] dts: kc1: Fix PWM backlight
+
+This commit fixes 0001-Update-device-tree-for-omap4-kc1.patch by
+using the correct clock source and correcting timer period to
+13333 ns instead of 75000 ns. By making these corrections, kc1 can
+properly change brightness.
+
+Note: 32kHz clock source will not be able to generate higher freqs.
+---
+ arch/arm/boot/dts/omap4-kc1-bl.dtsi | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/boot/dts/omap4-kc1-bl.dtsi b/arch/arm/boot/dts/omap4-kc1-bl.dtsi
+index 301f459c2427..3869c28f7d07 100644
+--- a/arch/arm/boot/dts/omap4-kc1-bl.dtsi
++++ b/arch/arm/boot/dts/omap4-kc1-bl.dtsi
+@@ -3,6 +3,8 @@
+  * Hansem Ro <hansemro@outlook.com>
+  */
+ 
++#include <dt-bindings/pwm/pwm.h>
++
+ / {
+ 	lcd2_power: lcd2_power_reg {
+ 		compatible = "regulator-fixed";
+@@ -14,14 +16,15 @@ lcd2_power: lcd2_power_reg {
+ 
+ 	bl: backlight {
+ 		compatible = "pwm-backlight";
+-		brightness-levels = <0 4 8 16 32 64 128 255>;
+-		num-interpolated-steps = <256>;
++		brightness-levels = <
++			0 31 63 95 127 159 191 223 255
++			>;
+ 		default-brightness-level = <5>;
+ 		enable-gpio = <
+ 			&gpio2 13 GPIO_ACTIVE_HIGH /* gpio_45 LCD_EN */
+ 			>;
+ 		power-supply = <&lcd2_power>;
+-		pwms = <&pwm10 0 75000 0>; /* 75 KHz */
++		pwms = <&pwm10 0 13333 0>; /* 75 KHz = 13333 ns*/
+ 	};
+ 
+ 	pwm10: dmtimer-pwm@10 {
+@@ -31,7 +34,7 @@ pwm10: dmtimer-pwm@10 {
+ 		compatible = "ti,omap-dmtimer-pwm";
+ 		ti,timers = <&timer10>;
+ 		ti,prescaler = <0>; /* prescale = 1 */
+-		ti,clock-source = <1>; /* 32 KHz source */
++		ti,clock-source = <0>; /* System Clock source */
+ 		#pwm-cells = <3>;
+ 	};
+ };
+-- 
+2.35.1
+
