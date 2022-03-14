@@ -1,7 +1,7 @@
+# Commented lines added by Makefile
+#setenv mmcpart c
+#setenv bootargs "console=ttyS2,115200 console=tty1 root=/dev/mmcblk0p12 mem=512M rootwait"
 setenv mmcnum 0
-setenv mmcpart c
-setenv mmctype ext4
-setenv bootargs "console=ttyS2,115200 console=tty1 root=/dev/mmcblk0p12 mem=512M rootwait"
 echo ${bootargs}
 echo Loading kernel
 load mmc ${mmcnum}:${mmcpart} 0x80008000 /boot/zImage

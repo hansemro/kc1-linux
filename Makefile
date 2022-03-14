@@ -66,10 +66,16 @@ boot.img: zImage.omap4-kc1
 		--cmdline $(CMDLINE) -o $@
 
 boot.scr: boot.cmd
-	mkimage -C none -A arm -O linux -T script -a 0 -e 0 -d $< $@
+	printf "setenv mmcpart %x\nsetenv bootargs \"%s\"\n" \
+		$(SYSTEM_PART_NUM) $(CMDLINE) | cat - $< > $<.tmp
+	mkimage -C none -A arm -O linux -T script -a 0 -e 0 -d $<.tmp $@
+	rm $<.tmp
 
 bootmenu.scr: bootmenu.cmd
-	mkimage -C none -A arm -O linux -T script -a 0 -e 0 -d $< $@
+	printf "setenv linux_mmc_bootpart %x\nsetenv bootargs \"%s\"\n" \
+		$(SYSTEM_PART_NUM) $(CMDLINE) | cat - $< > $<.tmp
+	mkimage -C none -A arm -O linux -T script -a 0 -e 0 -d $<.tmp $@
+	rm $<.tmp
 
 zImage: $(IMAGES_DIR)/zImage
 	ln -s $< $@
