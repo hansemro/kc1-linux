@@ -15,7 +15,7 @@ LOCAL_VERSION ?= -amazon-otter
 IMAGES_DIR = $(CURDIR)/buildroot/output/images
 MODULES_DIR = $(CURDIR)/buildroot/output/target/lib/modules/$(LIN_VERSION)$(LOCAL_VERSION)
 BUILDROOT_CONFIG ?= $(CURDIR)/buildroot_config
-CMDLINE ?= "rw root=/dev/mmcblk0p12 console=ttyS2,115200n8 console=tty1"
+CMDLINE ?= "rw rootwait console=ttyS2,115200 console=tty1 root=/dev/mmcblk0p$(SYSTEM_PART_NUM) mem=512M"
 MKBOOTIMG_BIN = $(CURDIR)/android_system_core/mkbootimg/mkbootimg
 
 wait_recovery:
